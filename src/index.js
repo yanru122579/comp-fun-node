@@ -1,22 +1,17 @@
 require("dotenv").config();
-const port = process.env.PORT || 6005;
+const port = process.env.PORT || 4000;
 const express = require("express");
 const session = require("express-session");
 const MysqlStore = require("express-mysql-session")(session);
 const db = require(__dirname + "/modules/mysql-connect");
 const sessionStore = new MysqlStore({}, db);
 const cors = require("cors");
-//以下三 爬蟲測試用
-const request = require("request");
-const cheerio = require("cheerio");
-const async = require("async");
 
 const upload = require(__dirname + "/modules/upload-img");
 
 const fs = require("fs");
 
 const app = express();
-app.set("view engine", "ejs");
 
 // cors 白名單
 app.use(cors());
@@ -32,6 +27,7 @@ const corsOptions = {
     }
   },
 };
+
 app.use(
   session({
     saveUninitialized: false,
@@ -43,11 +39,13 @@ app.use(
     },
   })
 );
+
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false })); // middleware // 中介軟體
 app.use(express.json());
 // app.use(express.static('public'));
 app.use(express.static(__dirname + "/../public"));
+
 
 //yanru---
 app.use("/cart", require(__dirname + "/routes/cart-order"));
@@ -56,61 +54,23 @@ app.use("/cart2", require(__dirname + "/routes/cart2"));
 //products
 app.use("/products", require(__dirname + "/routes/products"));
 app.use("/cart", require(__dirname + "/routes/cart"));
-//以下爬蟲用
 
-// getCities((cities) => {
-//   async.map(
-//     cities,
-//     (city, callback) => {
-//       getStories(city, (stores) => {
-//         callback(null, stores);
-//       });
-//     },
-//     (err, results) => {
-//       console.log([].concat.apply([], results));
-//     }
-//   );
-// });
 
-// function getCities(callback) {
-//   request(
-//     "http://www.ibon.com.tw/retail_inquiry.aspx#gsc.tab=0",
-//     (err, res, body) => {
-//       var $ = cheerio.load(body);
-//       var cities = $("#Class1 option")
-//         .map((index, obj) => {
-//           return $(obj).text();
-//         })
-//         .get();
-//       callback(cities);
-//     }
-//   );
-// }
+//商品
+app.use("/product", require(__dirname + "/routes/product"));
 
-// function getStories(city, callback) {
-//   var options = {
-//     url: "http://www.ibon.com.tw/retail_inquiry_ajax.aspx",
-//     method: "POST",
-//     form: {
-//       strTargetField: "COUNTY",
-//       strKeyWords: city,
-//     },
-//   };
-//   request(options, (err, res, body) => {
-//     var $ = cheerio.load(body);
-//     var stores = $("tr")
-//       .map((index, obj) => {
-//         return {
-//           id: $(obj).find("td").eq(0).text().trim(),
-//           store: $(obj).find("td").eq(1).text().trim(),
-//           address: $(obj).find("td").eq(2).text().trim(),
-//         };
-//       })
-//       .get();
-//     stores.shift();
-//     callback(stores);
-//   });
-// }
+//情報誌
+app.use("/aticles", require(__dirname + "/routes/aticles"));
+
+//會員
+app.use("/member", require(__dirname + "/routes/member"));
+
+//場地
+app.use("/pickplace", require(__dirname + "/routes/pickplace"));
+
+//活動
+// app.use("/", require(__dirname + "/routes/"));
+
 
 // 404 放在所有的路由後面
 app.use((req, res) => {
