@@ -1,9 +1,9 @@
 require("dotenv").config();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4000; //api統一為port4000
 const express = require("express");
 const session = require("express-session");
 const MysqlStore = require("express-mysql-session")(session);
-const db = require(__dirname + "/modules/mysql-connect");
+const db = require(__dirname + "/modules/mysql2-connect");
 const sessionStore = new MysqlStore({}, db);
 const cors = require("cors");
 
@@ -32,7 +32,7 @@ app.use(
   session({
     saveUninitialized: false,
     resave: false,
-    secret: "kre94865790lkglkdjflkdfghlsrhddk",
+    secret: "kre94865790lkglkdjflkdfghlsrhddk", //這裡暫時沒改，有用到的自行調整並且告知其他人
     store: sessionStore,
     cookie: {
       maxAge: 1200000,
@@ -44,23 +44,19 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false })); // middleware // 中介軟體
 app.use(express.json());
 // app.use(express.static('public'));
-app.use(express.static(__dirname + "/../public"));
+// app.use(express.static(__dirname + "/../public"));
 
+//ROUTE主要設定開始
 
-//yanru---
-app.use("/cart", require(__dirname + "/routes/cart-order"));
-//test
-app.use("/cart2", require(__dirname + "/routes/cart2"));
-//products
-app.use("/products", require(__dirname + "/routes/products"));
+//購物車
+app.use("/cartorder", require(__dirname + "/routes/cart-order"));
 app.use("/cart", require(__dirname + "/routes/cart"));
-
 
 //商品
 app.use("/product", require(__dirname + "/routes/product"));
 
 //情報誌
-app.use("/aticles", require(__dirname + "/routes/aticles"));
+app.use("/articles", require(__dirname + "/routes/articles"));
 
 //會員
 app.use("/member", require(__dirname + "/routes/member"));
@@ -68,8 +64,8 @@ app.use("/member", require(__dirname + "/routes/member"));
 //場地
 app.use("/pickplace", require(__dirname + "/routes/pickplace"));
 
-//活動
-// app.use("/", require(__dirname + "/routes/"));
+//活動 -預留
+app.use("/event", require(__dirname + "/routes/event"));
 
 
 // 404 放在所有的路由後面

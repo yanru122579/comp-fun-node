@@ -1,6 +1,6 @@
 const db = require(__dirname + "/../modules/mysql2-connect");
 const cartName = "cart1";
-
+//購物車SQL
 //取得購物車的內容
 //[{sid:1,quantity:2},{sid:1,quantity:3}]
 class Cart {
