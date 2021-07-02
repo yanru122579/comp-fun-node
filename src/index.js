@@ -51,6 +51,10 @@ app.use(express.static(__dirname + "/../public"));
 
 //yanru---
 app.use("/cart", require(__dirname + "/routes/cart-order"));
+//alvita---
+// app.use("/articles", require(__dirname + "/routes/articles"));
+
+
 //test
 app.use("/cart2", require(__dirname + "/routes/cart2"));
 //products
