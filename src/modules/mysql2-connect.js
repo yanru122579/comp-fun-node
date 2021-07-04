@@ -2,11 +2,11 @@ const mysql = require("mysql2");
 
 const pool = mysql.createPool({
   host: "localhost",
-  user: "root",
-  password: "",
-  database: "proj57",
+  user: "dblink",
+  password: "campfun2021",
+  database: "campfun",
   waitForConnections: true,
-  connectionLimit: 10, // 最大連線數
+  connectionLimit: 100, // 最大連線數
   queueLimit: 0,
 });
 

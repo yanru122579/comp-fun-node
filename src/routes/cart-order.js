@@ -1,6 +1,7 @@
+//購物車session路由 & 部分SQL
 const express = require("express");
 const moment = require("moment-timezone");
-const db = require(__dirname + "/../modules/mysql-connect");
+const db = require(__dirname + "/../modules/mysql2-connect");
 const upload = require(__dirname + "/../modules/upload-img");
 
 const router = express.Router();

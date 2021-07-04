@@ -1,5 +1,7 @@
 const db = require(__dirname + "/../modules/mysql2-connect");
 
+// 這個確定要留 by弘裕
+//產品SQL
 // CRUD
 class Product {
   // `sid`, `author`, `bookname`, `category_sid`, `book_id`, `publish_date`, `pages`, `price`, `isbn`, `on_sale`, `introduction`
