@@ -154,38 +154,41 @@ router.post("/add", upload.none(), async (req, res) => {
     error: "",
     insertId: 0,
   };
-  const data = {
-    ...req.body,
-    cartOrderId: moment().format("YYMMDDhhmmss"),
-  };
-  console.log(data);
-  const sql = "INSERT INTO `cartitem` SET ?";
-  const [results] = await db.query(sql, [
-    {
-      cartOrderId: data.cartOrderId,
-      product_id: data.product_id,
-      cartName: data.cartName,
-      cartBuyQty: data.cartBuyQty,
-      cartBuyP: data.cartBuyP,
-    },
-  ]);
+  // 期待前端傳送過來的資料結構
+  // req.body = {
+  //   orderItem: [
+  //   {}.
+  //   {},
+  // ],
+  //   orderInfo: {}
+  // }
+  // const cartOrderId = moment().format("YYMMDDhhmmss");
+  // 針對前端傳過來的item array做迴圈寫入資料庫處理
+  for (let item of req.body.orderItem) {
+    // item.cartOrderId = cartOrderId;
+    const sql = "INSERT INTO `cartitem` SET ?";
+    const [results] = await db.query(sql, [item]);
+    console.log(req.body);
+  }
+
   const sql1 = "INSERT INTO `cartorder` SET?";
   const [results1] = await db.query(sql1, [
     {
-      nNN: data.nNN,
-      nAA: data.nAA,
-      nCC: data.nCC,
-      nEE: data.nEE,
-      cartPayId: data.cartPayId,
-      cartLogisticsId: data.cartLogisticsId,
-      mid: data.mid,
-      cartTotal: data.cartTotal,
-      cartDescription: data.cartDescription,
-      cartStatus: data.cartStatus,
-      cartOrderId: data.cartOrderId,
+      nNN: req.body.orderInfo.nNN,
+      nAA: req.body.orderInfo.nAA,
+      nCC: req.body.orderInfo.nCC,
+      nEE: req.body.orderInfo.nEE,
+      cartPayId: req.body.orderInfo.cartPayId,
+      cartLogisticsId: req.body.orderInfo.cartLogisticsId,
+      mid: req.body.orderInfo.mid,
+      cartTotal: req.body.orderInfo.cartTotal,
+      cartDescription: req.body.orderInfo.cartDescription,
+      cartStatus: req.body.orderInfo.cartStatus,
+      orderclass: req.body.orderInfo.orderclass,
+      cartOrderId: req.body.orderInfo.cartOrderId,
     },
   ]);
-  output = { ...output, body: req.body };
+  output = { ...output, body: req.body.orderInfo };
   res.json(output);
 });
 
