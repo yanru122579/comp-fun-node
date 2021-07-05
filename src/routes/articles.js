@@ -12,6 +12,12 @@ const router = express.Router();
 //   res.json(Articles.getTest(req.url));
 // });
 
+router.get('/latest', async(req, res)=>{
+  console.log('latest')
+  let p = await Articles.getLatest(req)    
+  res.json(p);
+});
+
 // 取得全部
 router.get('/', async(req, res)=>{
   res.json(await Articles.getRows());
@@ -23,6 +29,8 @@ router.get('/:aId', async(req, res)=>{
   let p = await Articles.getRow(req.params.aId)    
   res.json([req.baseUrl, req.url, p]);
 });
+
+
 
 
 // 取得類別 ( need to update )
