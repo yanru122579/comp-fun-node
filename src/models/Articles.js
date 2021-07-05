@@ -70,6 +70,12 @@ class Aticles {
             data: r2,
         }
     }
+    
+    static async getLatest(){
+        let sql="SELECT * FROM `articlelist` ORDER BY `created_at` DESC limit 3"
+        let [r] = await db.query(sql);
+        return r
+    }
 
     // 讀取單筆 
     static async getRow(aId){
