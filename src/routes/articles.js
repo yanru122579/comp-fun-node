@@ -12,42 +12,44 @@ const router = express.Router();
 //   res.json(Articles.getTest(req.url));
 // });
 
+
+// 取得最新
 router.get('/latest', async(req, res)=>{
   console.log('latest')
-  let p = await Articles.getLatest(req)    
+  let p = await Articles.getLatest(req)
+  res.json(p)
+})
+
+// 取得標籤
+router.get('/tag', async(req, res)=>{
+  console.log('tag')
+  let p = await Articles.getTag(req)
+  res.json(p)
+})
+
+// 取得單項
+router.get('/a/:aId', async(req, res)=>{
+  let p = await Articles.getRow(req.params.aId)    
   res.json(p);
 });
+
+
+// 取得類別
+router.get('/cate/:aCategoryId', async(req, res)=>{
+  let p = await Articles.getCate(req.params.aCategoryId)    
+  res.json(p);
+});
+
+// old one
+// router.get('/cate/:aCategoryId', async(req, res)=>{
+//   res.json(await Articles.getRows(req.params.aCategoryId));
+// });
+
 
 // 取得全部
 router.get('/', async(req, res)=>{
   res.json(await Articles.getRows());
 });
 
-
-// 取得單項
-router.get('/:aId', async(req, res)=>{
-  let p = await Articles.getRow(req.params.aId)    
-  res.json([req.baseUrl, req.url, p]);
-});
-
-
-
-
-// 取得類別 ( need to update )
-// router.get('/cate2', async(req, res)=>{
-//   res.json(await Articles.getRows({cate:2}));
-// });
-// router.get('/cate3', async(req, res)=>{
-//   res.json(await Articles.getRows({cate:3}));
-// });
-// router.get('/cate4', async(req, res)=>{
-//   res.json(await Articles.getRows({cate:4}));
-// });
-// router.get('/cate5', async(req, res)=>{
-//   res.json(await Articles.getRows({cate:5}));
-// });
-
-
-// 類別名稱
 
 module.exports = router;
