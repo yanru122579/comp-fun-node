@@ -44,7 +44,7 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false })); // middleware // 中介軟體
 app.use(express.json());
 // app.use(express.static('public'));
-// app.use(express.static(__dirname + "/../public"));
+app.use(express.static(__dirname + "/../public"));
 
 //ROUTE主要設定開始
 
