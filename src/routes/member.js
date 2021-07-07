@@ -8,6 +8,9 @@ const User = require(__dirname + "/../models/Member");
 // 連接資料庫
 const db = require(__dirname + "/../modules/mysql2-connect");
 
+// 上傳大頭貼
+const upload = require(__dirname + "/../modules/upload-img");
+
 
 // 執行sql用的async-await的函式
 // sql 執行用的sql
@@ -88,6 +91,7 @@ async function userLogin(sql, req, res, instance) {
 
     if (rows.length) {
       result = rows[0]
+      console.log(result)
 
       req.session.regenerate(function (err) {
         if (err) {
@@ -103,6 +107,7 @@ async function userLogin(sql, req, res, instance) {
         req.session.loginMId = result.mId
         req.session.loginEmail = result.email
 
+        console.log(req.session)
         // 回應前端，我的自訂資料、伺服器搜索結果
         res.status(200).json(data)
       })
@@ -120,14 +125,15 @@ async function userLogin(sql, req, res, instance) {
   }
 }
 
-// 判斷是否登入
-router.get("/login", (req, res) => {
-  if (req.session.loginEmail) {
-    res.redirect("/");  //如果已經登入就跳轉回首頁
-  } else {
-    res.render("login");
-  }
-});
+// // 判斷是否登入
+// router.get("/login", (req, res) => {
+//   console.log(req.session)
+//   if (req.session.loginMId) {
+//     res.redirect("/");  //如果已經登入就跳轉回首頁
+//   } else {
+//     res.redirect("/");
+//   }
+// });
 
 // 處理會員登入
 router.post('/login', function (req, res, next) {
@@ -159,24 +165,24 @@ router.get('/logout', function (req, res, next) {
 })
 
 // 檢查是否登入
-router.get('/checklogin', function (req, res, next) {
-  const sess = req.session
+// router.get('/checklogin', function (req, res, next) {
+//   const sess = req.session
 
-  const id = sess.loginId
-  const username = sess.loginUsername
-  const name = sess.loginName
-  const email = sess.loginEmail
-  const createDate = sess.loginCreatedDate
+//   const id = sess.loginId
+//   const username = sess.loginUsername
+//   const name = sess.loginName
+//   const email = sess.loginEmail
+//   const createDate = sess.loginCreatedDate
 
-  const isLogined = !!name
+//   const isLogined = !!name
 
-  if (isLogined) {
-    res.status(200).json({ id, name, username, email, createDate })
-  } else {
-    // 登出狀態時回傳`{id:0}`
-    res.status(200).json({ id: 0 })
-  }
-})
+//   if (isLogined) {
+//     res.status(200).json({ id, name, username, email, createDate })
+//   } else {
+//     // 登出狀態時回傳`{id:0}`
+//     res.status(200).json({ id: 0 })
+//   }
+// })
 
 // 新增會員
 router.post('/register', (req, res, next) => {
@@ -193,6 +199,30 @@ router.post('/register', (req, res, next) => {
 
   executeSQL(user.addUserSQL(), res, 'post', false, user)
 })
+
+// 顯示大頭貼
+router.get("/try-upload", (req, res) => {
+  res.render("try-upload");
+});
+
+// 上傳大頭貼
+router.post("/try-upload", upload.single("avatar"), async (req, res) => {
+  console.log(req.file);
+
+  // let newName = '';
+  // if(extMap[req.file.mimetype]){
+  //     newName = uuidv4() + extMap[req.file.mimetype];
+  //     await fs.promises.rename(req.file.path, './public/img/' + newName);
+  // }
+
+  res.json({
+    filename: req.file && req.file.filename,
+    body: req.body,
+  });
+});
+
+
+
 
 router.get("/try-sess", (req, res) => {
   req.session.my_var = req.session.my_var || 0; //預設為0
