@@ -20,30 +20,39 @@ router.get('/latest', async(req, res)=>{
   res.json(p)
 })
 
-// 取得標籤
-router.get('/tag', async(req, res)=>{
-  console.log('tag')
-  let p = await Articles.getTag(req)
-  res.json(p)
-})
-
-// 取得單項
-router.get('/a/:aId', async(req, res)=>{
-  let p = await Articles.getRow(req.params.aId)    
-  res.json(p);
-});
-
-
 // 取得類別
 router.get('/cate/:aCategoryId', async(req, res)=>{
   let p = await Articles.getCate(req.params.aCategoryId)    
   res.json(p);
 });
 
-// old one
-// router.get('/cate/:aCategoryId', async(req, res)=>{
-//   res.json(await Articles.getRows(req.params.aCategoryId));
-// });
+
+// 取得單篇文章所帶多個標籤
+router.get('/a/tag/:aId', async(req, res)=>{
+  let p = await Articles.getArticleTag(req.params.aId)
+  res.json(p);
+})
+
+// 取得單一標籤所帶文章
+router.get('/tag/:tagId', async(req, res)=>{
+  let p = await Articles.getTagFilterArticles(req.params.tagId)
+  res.json(p);
+})
+
+
+// 取得單篇文章
+router.get('/a/:aId', async(req, res)=>{
+  let p = await Articles.getRow(req.params.aId)    
+  res.json(p);
+});
+
+
+// 取得首頁最新標籤
+router.get('/tag', async(req, res)=>{
+  console.log('tag')
+  let p = await Articles.getTag(req)
+  res.json(p)
+})
 
 
 // 取得全部
