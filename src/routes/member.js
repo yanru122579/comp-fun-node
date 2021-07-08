@@ -98,21 +98,19 @@ async function userLogin(sql, req, res, instance) {
           res.status(200).json({ status: 2, message: '登入失敗' })
         }
         data.success = true;
-        data.message.type = 'primary';
-        data.message.text = '有相符資料'
+        data.message.text = '有找到資料'
         data.mId = result.mId
         data.email = result.email
 
-
-        req.session.loginMId = result.mId
-        req.session.loginEmail = result.email
+        const {mId, email} = result
+        req.session.member = {mId, email}
 
         console.log(req.session)
         // 回應前端，我的自訂資料、伺服器搜索結果
         res.status(200).json(data)
       })
     } else {
-      data.message.text = '無相符資料'
+      data.message.text = '沒找到相符資料'
       res.status(200).json(data)
     }
   } catch (error) {
@@ -165,24 +163,24 @@ router.get('/logout', function (req, res, next) {
 })
 
 // 檢查是否登入
-// router.get('/checklogin', function (req, res, next) {
-//   const sess = req.session
+router.get('/checklogin', function (req, res, next) {
+  const sess = req.session
 
-//   const id = sess.loginId
-//   const username = sess.loginUsername
-//   const name = sess.loginName
-//   const email = sess.loginEmail
-//   const createDate = sess.loginCreatedDate
+  const id = sess.loginId
+  const username = sess.loginUsername
+  const name = sess.loginName
+  const email = sess.loginEmail
+  const createDate = sess.loginCreatedDate
 
-//   const isLogined = !!name
+  const isLogined = !!name
 
-//   if (isLogined) {
-//     res.status(200).json({ id, name, username, email, createDate })
-//   } else {
-//     // 登出狀態時回傳`{id:0}`
-//     res.status(200).json({ id: 0 })
-//   }
-// })
+  if (isLogined) {
+    res.status(200).json({ id, name, username, email, createDate })
+  } else {
+    // 登出狀態時回傳`{id:0}`
+    res.status(200).json({ id: 0 })
+  }
+})
 
 // 新增會員
 router.post('/register', (req, res, next) => {
