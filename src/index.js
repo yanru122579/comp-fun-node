@@ -14,20 +14,22 @@ const fs = require("fs");
 const app = express();
 
 // cors 白名單
-app.use(cors());
+// app.use(cors());
 const whitelist = ["http://localhost:3000", undefined];
 const corsOptions = {
   credentials: true,
   origin: function (origin, callback) {
     console.log("origin:" + origin);
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-};
-
+    callback(null, true);
+    // if (whitelist.indexOf(origin) !== -1) {
+      //   callback(null, true);
+      // } else {
+        //   callback(new Error("Not allowed by CORS"));
+        // }git
+      },
+    };
+    
+app.use(cors(corsOptions));
 app.use(
   session({
     saveUninitialized: false,
@@ -40,10 +42,9 @@ app.use(
   })
 );
 
-app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false })); // middleware // 中介軟體
 app.use(express.json());
-// app.use(express.static('public'));
+app.use(express.static('public'));
 // app.use(express.static(__dirname + "/../public"));
 
 //ROUTE主要設定開始
