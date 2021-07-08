@@ -77,18 +77,52 @@ class Articles {
       
     }
 
-    // 讀取標籤
-    static async getTag(){
-      let sql =  "SELECT * FROM `ataglist` ORDER BY `created_at` DESC LIMIT 8"
-      let [r] = await db.query(sql);
-      return {
-        r
+    // 讀取類別 
+     static async getCate(aCategoryId){
+      if(!aCategoryId) return null;
+      let sql = "SELECT * FROM `articlelist` WHERE `aCategoryId`=?"
+      // 回傳取得類別資料的陣列
+      let [r] = await db.query(sql, [aCategoryId]);
+      if(!r || !r.length){
+          return null;
       }
-    }
+      return r; 
+  }
+
+    // 讀取單篇文章所帶多個標籤 (1 post to multiple tags)
+      static async getArticleTag(aId){
+        if(!aId) return null;
+        let sql = "SELECT `articlelist`.`aId`, `ataglist`.`tagName`,`atagmap`.`tagId` FROM `atagmap` JOIN `articlelist` ON `articlelist`.`aId` = `atagmap`.`aId` JOIN `ataglist` ON `ataglist`.`tagId` = `atagmap`.`tagId` WHERE `articleList`.`aId` =?"
+        // 回傳取得類別資料的陣列
+        let [r] = await db.query(sql, [aId]);
+        if(!r || !r.length){
+            return null;
+        }
+        return r; 
+  }
+
+    // 讀取單一標籤所帶多篇文章 (1 tag to multiple posts)
+      static async getTagFilterArticles(tagId){
+        if(!tagId) return null;
+        let sql = "SELECT `articleList`.`aId`, `articleList`.`aTitle`, `articleList`.`aImg`, `articleList`.`author`, `articleList`.`aContent`, `articleList`.`aCategoryId`, `articleList`.`aDate`,`articleList`.`created_at`, `articleList`.`updated_at`,        `aCategoryList`.`aCatName`, `ataglist`.`tagName`, `ataglist`.`tagId` FROM `articleList`  INNER JOIN `aCategoryList` ON `articleList`.`aCategoryId` = `aCategoryList`.`aCatId`     INNER JOIN `atagmap` ON `articlelist`.`aId` = `atagmap`.`aId` INNER JOIN `ataglist` ON `ataglist`.`tagId` = `atagmap`.`tagId` WHERE FIND_IN_SET(`atagmap`.`tagId`, ?)"
+        // 回傳取得類別資料的陣列
+        let [r] = await db.query(sql, [tagId]);
+        if(!r || !r.length){
+            return null;
+        }
+        return r; 
+  }
 
 
-    // 讀取單筆 
-    static async getRow(aId){
+    // 讀取所有單篇文章標籤所帶商品
+
+
+
+    
+
+
+    // 讀取單篇文章 
+      static async getRow(aId){
         if(!aId) return null;
         let sql = "SELECT * FROM `articlelist` WHERE `aId`=?"
         // 回傳取得單筆資料的陣列
@@ -99,17 +133,15 @@ class Articles {
         return r[0]; 
     }
 
-    // 讀取類別 
-    static async getCate(aCategoryId){
-        if(!aCategoryId) return null;
-        let sql = "SELECT * FROM `articlelist` WHERE `aCategoryId`=?"
-        // 回傳取得類別資料的陣列
-        let [r] = await db.query(sql, [aCategoryId]);
-        if(!r || !r.length){
-            return null;
+    // 讀取首頁最新標籤
+      static async getTag(){
+        let sql =  "SELECT * FROM `ataglist` ORDER BY `created_at` DESC LIMIT 8"
+        let [r] = await db.query(sql);
+        return {
+          r
         }
-        return r; 
-    }
+      }
+      
 
 }
 
