@@ -200,12 +200,12 @@ router.post('/register', (req, res, next) => {
 
 
 // 顯示大頭貼
-router.get("/try-upload", (req, res) => {
+router.get("/avatarUpload", (req, res) => {
   res.render("try-upload");
 });
 
 // 上傳大頭貼
-router.post("/try-upload", upload.single("avatar"), async (req, res) => {
+router.post("/avatarUpload", upload.single("avatar"), async (req, res) => {
   console.log(req.file);
   
   // let newName = '';
@@ -252,11 +252,11 @@ router.put('/userdata/:userId', (req, res) => {
 
 // 測試用
 router.get("/try-sess", (req, res) => {
-  req.session.my_var = req.session.my_var || 0; //預設為0
-  req.session.my_var++;
+  // req.session.my_var = req.session.my_var || 0; //預設為0
+  // req.session.my_var++;
   res.json({
-    my_var: req.session.my_var,
-    session: req.session,
+    // my_var: req.session.my_var,
+    session: req.session.member,
   });
 });
 
