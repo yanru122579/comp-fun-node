@@ -1,3 +1,4 @@
+// require("dotenv").config();
 //會員api路由
 const express = require("express");
 const router = express.Router();
@@ -13,6 +14,9 @@ const upload = require(__dirname + "/../modules/upload-img");
 
 // 加密
 const bcryptjs =require('bcryptjs');
+// jsonwebtoken
+const jwt =require('jsonwebtoken');
+
 
 // 執行sql用的async-await的函式
 // sql 執行用的sql
@@ -111,12 +115,14 @@ async function userLogin(sql, req, res, userPassword) {
       }
       data.success = true;
       data.message = '登入成功'
-      data.mId = result.mId
-      data.email = result.email
-      const {mId, email} = result
-      req.session.member = {mId, email}
-      // console.log(req.session)
-    //   // 回應前端，我的自訂資料、伺服器搜索結果
+      const {mId, email, fName, lName,nickName, phone} = result
+
+      
+      data.token = jwt.sign({mId, email, fName, lName,nickName, phone}, process.env.TOKEN_SECRECT);
+
+      // 這段可以測試解密
+      // console.log(jwt.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtSWQiOjEyNywiZW1haWwiOiJxb28iLCJmTmFtZSI6IuWlpyIsImxOYW1lIjoi5qiC6ZueIiwibmlja05hbWUiOiLlsLHmmK_kuIDpmrvpm54iLCJwaG9uZSI6IjEyMzQ1Njc4OSIsImlhdCI6MTYyNTg0NTI1MX0.rrmJwDNyBN97UHf2O2HtuW7-YfceDlGFb8X-iWdyaFo",process.env.TOKEN_SECRECT))
+
       res.status(200).json(data)
     })
 }
