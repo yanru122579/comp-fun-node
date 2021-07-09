@@ -26,6 +26,12 @@ router.get('/cate/:aCategoryId', async(req, res)=>{
   res.json(p);
 });
 
+// 取得類別名
+router.get('/cate/top/:aCategoryId', async(req, res)=>{
+  let p = await Articles.getCateTop(req.params.aCategoryId)    
+  res.json(p);
+});
+
 
 // 取得單篇文章所帶多個標籤
 router.get('/a/tag/:aId', async(req, res)=>{
@@ -58,7 +64,7 @@ router.get('/tag', async(req, res)=>{
 // 取得全部
 router.get('/', async(req, res)=>{
   res.json(await Articles.getRows());
-});
+}); 
 
 
 module.exports = router;
