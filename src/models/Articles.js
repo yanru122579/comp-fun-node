@@ -147,7 +147,7 @@ class Articles {
         let [r] = await db.query(sql);
         return {
           r
-        }
+        } 
     }
       
     // // 讀取分類

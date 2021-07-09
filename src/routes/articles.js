@@ -64,7 +64,7 @@ router.get('/tag', async(req, res)=>{
 // 取得全部
 router.get('/', async(req, res)=>{
   res.json(await Articles.getRows());
-});
+}); 
 
 
 module.exports = router;
