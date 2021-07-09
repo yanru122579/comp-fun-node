@@ -28,7 +28,7 @@ class User {
 
   // login用
   getUserUserByUsernameAndPasswordSQL() {
-    let sql = `SELECT * FROM Member WHERE email = '${this.email}' AND password = '${this.password}' LIMIT 0,1`
+    let sql = `SELECT * FROM Member WHERE email = '${this.email}' LIMIT 0,1`
     return sql
   }
 

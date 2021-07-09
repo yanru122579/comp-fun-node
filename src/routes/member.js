@@ -11,6 +11,8 @@ const db = require(__dirname + "/../modules/mysql2-connect");
 // 上傳大頭貼
 const upload = require(__dirname + "/../modules/upload-img");
 
+// 加密
+const bcryptjs =require('bcryptjs');
 
 // 執行sql用的async-await的函式
 // sql 執行用的sql
@@ -82,45 +84,41 @@ async function executeSQL(
 }
 
 // instance 物件實體，預設為空物件
-async function userLogin(sql, req, res, instance) {
-  try {
-    const data = { success: false, message: { type: 'danger', text: '' } };
-    const [rows, fields] = await db.query(sql)
+async function userLogin(sql, req, res, userPassword) {
+
+    const data = {
+      success: false,
+      message: '沒有 account 或沒有 password 欄位'
+    };
+    
+    const [rows] = await db.query(sql)
 
     let result = {}
 
-    if (rows.length) {
-      result = rows[0]
-      console.log(result)
-
-      req.session.regenerate(function (err) {
-        if (err) {
-          res.status(200).json({ status: 2, message: '登入失敗' })
-        }
-        data.success = true;
-        data.message.text = '有找到資料'
-        data.mId = result.mId
-        data.email = result.email
-
-        const {mId, email} = result
-        req.session.member = {mId, email}
-
-        console.log(req.session)
-        // 回應前端，我的自訂資料、伺服器搜索結果
-        res.status(200).json(data)
-      })
-    } else {
-      data.message.text = '沒找到相符資料'
-      res.status(200).json(data)
+    if (rows.length < 1) {
+      data.message= '帳號或密碼錯誤(帳號)'
+      return res.status(200).json(data)
     }
-  } catch (error) {
-    // 錯誤處理
-    console.log(error)
-    // 顯示錯誤於json字串
-    res.status(200).json({
-      message: error,
+
+    result = rows[0]
+    console.log(result,userPassword,result.password)
+
+    bcryptjs.compare(userPassword,result.password,function(err,compareResult){
+      console.log(compareResult)
+      if(!compareResult ){
+        data.message = '帳號或密碼錯誤(密碼)'
+        return res.status(405).json(data)
+      }
+      data.success = true;
+      data.message = '登入成功'
+      data.mId = result.mId
+      data.email = result.email
+      const {mId, email} = result
+      req.session.member = {mId, email}
+      // console.log(req.session)
+    //   // 回應前端，我的自訂資料、伺服器搜索結果
+      res.status(200).json(data)
     })
-  }
 }
 
 // // 判斷是否登入
@@ -135,14 +133,15 @@ async function userLogin(sql, req, res, instance) {
 
 // 處理會員登入
 router.post('/login', function (req, res, next) {
+  
   let user = new User(
     req.body.mId,
     req.body.email,
     req.body.password,
   )
-
+  const userPassword = req.body.password
   // 回應都寫在userLogin方法裡(async-await)
-  userLogin(user.getUserUserByUsernameAndPasswordSQL(), req, res, user)
+  userLogin(user.getUserUserByUsernameAndPasswordSQL(), req, res,userPassword)
 })
 
 
@@ -188,14 +187,15 @@ router.post('/register', (req, res, next) => {
   // console.log(typeof req.body)
   // console.log(req.body)
 
-  //從request json 資料建立新的物件
-  let user = new User(
-    req.body.mId,
-    req.body.email,
-    req.body.password
-  )
-
-  executeSQL(user.addUserSQL(), res, 'post', false, user)
+  // let password = ''
+  bcryptjs.hash(req.body.password,10,function(err,hash){
+    let user = new User(
+      req.body.mId,
+      req.body.email,
+      hash
+    )
+    executeSQL(user.addUserSQL(), res, 'post', false, user)
+  })
 })
 
 
