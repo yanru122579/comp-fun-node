@@ -198,40 +198,68 @@ router.post('/register', (req, res, next) => {
   executeSQL(user.addUserSQL(), res, 'post', false, user)
 })
 
+
 // 顯示大頭貼
-router.get("/try-upload", (req, res) => {
+router.get("/avatarUpload", (req, res) => {
   res.render("try-upload");
 });
 
 // 上傳大頭貼
-router.post("/try-upload", upload.single("avatar"), async (req, res) => {
+router.post("/avatarUpload", upload.single("avatar"), async (req, res) => {
   console.log(req.file);
-
+  
   // let newName = '';
   // if(extMap[req.file.mimetype]){
-  //     newName = uuidv4() + extMap[req.file.mimetype];
-  //     await fs.promises.rename(req.file.path, './public/img/' + newName);
-  // }
-
-  res.json({
-    filename: req.file && req.file.filename,
-    body: req.body,
+    //     newName = uuidv4() + extMap[req.file.mimetype];
+    //     await fs.promises.rename(req.file.path, './public/img/' + newName);
+    // }
+    
+    res.json({
+      filename: req.file && req.file.filename,
+      body: req.body,
+    });
   });
-});
+
+  
+// get 讀取單一會員資料
+router.get('/userdata/:userId', (req, res, next) => {
+  console.log(req.params.userId)
+  executeSQL(User.getUserByIdSQL(req.params.userId), res, 'get', false)
+})
+
+// put 更新單一會員資料
+router.put('/userdata/:userId', (req, res) => {
+  console.log(req.body.lName)
+  let user = new User(
+    id = '',
+    email = '',
+    password = '',
+    fName = req.body.fName,
+    lName = req.body.lName,
+    nickName = req.body.nickName,
+    birthday = req.body.birthday,
+    phone = req.body.phone,
+    gender = req.body.gender,
+  )
+
+  // id值為數字
+  user.id = +req.params.userId
+
+  executeSQL(user.updateUserByIdSQL(req.params.userId), res, 'put', false, user)
+})
 
 
-
-
-router.get("/try-sess", (req, res) => {
-  req.session.my_var = req.session.my_var || 0; //預設為0
-  req.session.my_var++;
-  res.json({
-    my_var: req.session.my_var,
-    session: req.session,
-  });
-});
 
 // 測試用
+router.get("/try-sess", (req, res) => {
+  // req.session.my_var = req.session.my_var || 0; //預設為0
+  // req.session.my_var++;
+  res.json({
+    // my_var: req.session.my_var,
+    session: req.session.member,
+  });
+});
+
 router.get("/", async (req, res) => {
   res.json(Member.getTest(req.url));
 });
