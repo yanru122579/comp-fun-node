@@ -236,37 +236,19 @@ router.post('/register', (req, res, next) => {
 // });
 
 // 上傳大頭貼
-router.put("/avatarUpload", upload.single("avatar"), async (req, res) => {
+router.post("/avatarUpload", upload.single("avatar"), async (req, res) => {
   console.log(req.file);
-  console.log(req.bearer);
-
+  
   // let newName = '';
   // if(extMap[req.file.mimetype]){
     //     newName = uuidv4() + extMap[req.file.mimetype];
     //     await fs.promises.rename(req.file.path, './public/img/' + newName);
     // }
-
-      // console.log(req.bearer.mId)
-  // console.log(req.body)
-
-  let mId = req.bearer.mId
-  let user = new User(
-    id = 0,
-    email = '',
-    password = '',
-    fName = req.body.fName,
-    lName = req.body.lName,
-    nickname = req.body.nickname,
-    birthday = req.body.birthday,
-    phone = req.body.phone,
-    gender = req.body.gender,
-    avatar = req.file.filename
-  )
     
-    // id值為數字
-  user.id = +req.bearer.mId
-
-  executeSQL(user.updateUserAvatarByIdSQL(mId), res, 'put', false, user)
+    res.json({
+      filename: req.file && req.file.filename,
+      body: req.body,
+    });
   });
 
   
@@ -283,7 +265,7 @@ router.put('/userdata/', (req, res) => {
   // console.log(req.body)
   let mId = req.bearer.mId
   let user = new User(
-    id = 0,
+    id = '',
     email = '',
     password = '',
     fName = req.body.fName,

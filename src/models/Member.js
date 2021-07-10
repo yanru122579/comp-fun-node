@@ -1,15 +1,16 @@
 // 會員 SQL
 class User {
-  constructor(id,email, password, fName, lName, nickName, birthday, phone, gender) {
+  constructor(id,email, password, fName, lName,nickname , birthday, phone, gender, avatar) {
     this.id = 0
     this.email = email
     this.password = password
     this.fName = fName
     this.lName  = lName
-    this.nickName  = nickName
+    this.nickname  = nickname
     this.birthday  = birthday
     this.phone  = phone
     this.gender  = gender
+    this.avatar = avatar
   }
 
   // 新增會員
@@ -19,9 +20,17 @@ class User {
     return sql
   }
 
+  // 更新個人資料
   updateUserByIdSQL(id) {
     let sql = `UPDATE member \
-               SET fName = '${this.fName}',lName = '${this.lName}', nickName = '${this.nickName}', phone = '${this.phone}', birthday = '${this.birthday}', gender = '${this.gender}' \
+               SET fName = '${this.fName}',lName = '${this.lName}', nickname = '${this.nickname}', phone = '${this.phone}', birthday = '${this.birthday}', gender = '${this.gender}' \
+               WHERE mId =  ${id}`
+    return sql
+  }
+  // 更新大頭貼
+  updateUserAvatarByIdSQL(id) {
+    let sql = `UPDATE member \
+               SET avatar = '${this.avatar}' \
                WHERE mId =  ${id}`
     return sql
   }
