@@ -17,6 +17,32 @@ const bcryptjs =require('bcryptjs');
 // jsonwebtoken
 const jwt =require('jsonwebtoken');
 
+// 把JSONwebtoken放進檔頭
+router.use((req, res, next)=>{
+  // res.locals = {
+  //     email: '全域的 middleware: email',
+  //     password: '全域的 middleware: password',
+  // };
+  res.locals.admin = req.session.admin || {};  // 把登入的管理者資料放到 locals
+
+  req.bearer = null;  // 自訂屬性
+  let auth = req.get('Authorization');
+  // console.log(auth)
+  if(auth && auth.indexOf('Bearer ')===0){
+    auth = auth.slice(7);
+    try {
+          console.log(auth)
+          req.bearer = jwt.verify(auth, process.env.TOKEN_SECRECT )
+          console.log(req.bearer)
+      } catch(ex){
+          req.bearer = false;
+          console.log(ex);
+      }
+  }
+  next();
+});
+
+
 
 // 執行sql用的async-await的函式
 // sql 執行用的sql
@@ -121,7 +147,7 @@ async function userLogin(sql, req, res, userPassword) {
       data.token = jwt.sign({mId, email, fName, lName,nickName, phone}, process.env.TOKEN_SECRECT);
 
       // 這段可以測試解密
-      // console.log(jwt.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtSWQiOjEyNywiZW1haWwiOiJxb28iLCJmTmFtZSI6IuWlpyIsImxOYW1lIjoi5qiC6ZueIiwibmlja05hbWUiOiLlsLHmmK_kuIDpmrvpm54iLCJwaG9uZSI6IjEyMzQ1Njc4OSIsImlhdCI6MTYyNTg0NTI1MX0.rrmJwDNyBN97UHf2O2HtuW7-YfceDlGFb8X-iWdyaFo",process.env.TOKEN_SECRECT))
+      // console.log(jwt.verify(auth, process.env.TOKEN_SECRECT ))
 
       res.status(200).json(data)
     })
@@ -254,6 +280,13 @@ router.put('/userdata/:userId', (req, res) => {
   executeSQL(user.updateUserByIdSQL(req.params.userId), res, 'put', false, user)
 })
 
+// 解析token
+router.get('/verifyMemberData',(req,res)=>{
+  res.json({
+    headers : req.headers,
+    bearer: req.bearer,
+  });
+})
 
 
 // 測試用
