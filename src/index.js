@@ -16,20 +16,33 @@ const app = express();
 
 // cors 白名單
 // app.use(cors());
+// const whitelist = ["http://localhost:3000", undefined];
+// const corsOptions = {
+//   credentials: true,
+//   //   origin: function (origin, callback) {
+//   //     console.log("origin:" + origin);
+//   //     callback(null, true);
+//   //     if (whitelist.indexOf(origin) !== -1) {
+//   //       callback(null, true);
+//   //     } else {
+//   //       callback(new Error("Not allowed by CORS"));
+//   //     }
+//   //   },
+// };
+app.use(cors());
 const whitelist = ["http://localhost:3000", undefined];
 const corsOptions = {
   credentials: true,
   origin: function (origin, callback) {
     console.log("origin:" + origin);
-    callback(null, true);
-    // if (whitelist.indexOf(origin) !== -1) {
-      //   callback(null, true);
-      // } else {
-        //   callback(new Error("Not allowed by CORS"));
-        // }git
-      },
-    };
-    
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
 app.use(cors(corsOptions));
 app.use(
   session({
@@ -45,7 +58,7 @@ app.use(
 
 app.use(express.urlencoded({ extended: false })); // middleware // 中介軟體
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static("public"));
 // app.use(express.static(__dirname + "/../public"));
 
 //ROUTE主要設定開始
@@ -53,7 +66,7 @@ app.use(express.static('public'));
 //購物車
 app.use("/cartorder", require(__dirname + "/routes/cart-order"));
 app.use("/cart", require(__dirname + "/routes/cart"));
-
+app.use("/article", require(__dirname + "/routes/article"));
 //商品
 app.use("/product", require(__dirname + "/routes/product"));
 
