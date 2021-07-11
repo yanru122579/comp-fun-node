@@ -1,6 +1,6 @@
 // 會員 SQL
 class User {
-  constructor(id,email, password, fName, lName,nickname , birthday, phone, gender, avatar) {
+  constructor(id,email, password, fName, lName,nickname , birthday, phone, gender, avatar, country, township, naa) {
     this.id = 0
     this.email = email
     this.password = password
@@ -11,12 +11,21 @@ class User {
     this.phone  = phone
     this.gender  = gender
     this.avatar = avatar
+    this.country = country
+    this.	township = 	township
+    this.naa = naa
   }
 
   // 新增會員
   addUserSQL() {
     let sql = `INSERT INTO member(email, password, created_at) \
                    VALUES('${this.email}', '${this.password}', NOW())`
+    return sql
+  }
+  // 新增地址
+  addAdressSQL(id) {
+    let sql = `INSERT INTO adressbook(mId, country, township, naa, created_at) \
+                   VALUES('${id}', '${this.country}','${this.township}','${this.naa}', NOW())`
     return sql
   }
 

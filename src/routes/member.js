@@ -145,22 +145,13 @@ async function userLogin(sql, req, res, userPassword) {
       
       data.token = jwt.sign({mId, email, fName, lName,nickname, phone ,avatar}, process.env.TOKEN_SECRECT);
 
+      data.information = {email,nickname,avatar}
       // 這段可以測試解密
       // console.log(jwt.verify(auth, process.env.TOKEN_SECRECT ))
 
       res.status(200).json(data)
     })
 }
-
-// // 判斷是否登入
-// router.get("/login", (req, res) => {
-//   console.log(req.session)
-//   if (req.session.loginMId) {
-//     res.redirect("/");  //如果已經登入就跳轉回首頁
-//   } else {
-//     res.redirect("/");
-//   }
-// });
 
 // 處理會員登入
 router.post('/login', function (req, res, next) {
@@ -190,26 +181,6 @@ router.get('/logout', function (req, res, next) {
     res.clearCookie('skey')
     res.status(200).json({ status: 0, message: '登出成功' })
   })
-})
-
-// 檢查是否登入
-router.get('/checklogin', function (req, res, next) {
-  const sess = req.session
-
-  const id = sess.loginId
-  const username = sess.loginUsername
-  const name = sess.loginName
-  const email = sess.loginEmail
-  const createDate = sess.loginCreatedDate
-
-  const isLogined = !!name
-
-  if (isLogined) {
-    res.status(200).json({ id, name, username, email, createDate })
-  } else {
-    // 登出狀態時回傳`{id:0}`
-    res.status(200).json({ id: 0 })
-  }
 })
 
 // 新增會員
@@ -280,11 +251,11 @@ router.get('/userdata/', (req, res, next) => {
 // put 更新單一會員資料
 router.put('/userdata/', (req, res) => {
   // console.log(req.bearer.mId)
-  // console.log(req.body)
+  console.log(req.body)
   let mId = req.bearer.mId
   let user = new User(
     id = 0,
-    email = '',
+    email = req.bearer.email,
     password = '',
     fName = req.body.fName,
     lName = req.body.lName,
@@ -292,10 +263,11 @@ router.put('/userdata/', (req, res) => {
     birthday = req.body.birthday,
     phone = req.body.phone,
     gender = req.body.gender,
+    avatar = req.bearer.avatar
   )
 
   // id值為數字
-  user.id = +req.bearer.mId
+  // user.id = +req.bearer.mId
 
   executeSQL(user.updateUserByIdSQL(mId), res, 'put', false, user)
 })
@@ -308,6 +280,32 @@ router.get('/verifyMemberData',(req,res)=>{
   });
 })
 
+// 新增地址
+router.post('/adressbook', (req, res, next) => {
+  // 測試response，會自動解析為物件
+  // console.log(typeof req.body)
+  console.log(req.body)
+
+  let mId = req.bearer.mId
+  let user = new User(
+    id = 0,
+    email = req.bearer.email,
+    password = '',
+    fName = req.body.fName,
+    lName = req.body.lName,
+    nickname = req.body.nickname,
+    birthday = req.body.birthday,
+    phone = req.body.phone,
+    gender = req.body.gender,
+    avatar = req.bearer.avatar,
+    country = req.body.country,
+    township = req.body.township,
+    naa = req.body.naa
+  )
+  console.log(user)
+  executeSQL(user.addAdressSQL(mId), res, 'post', false, user)
+  
+})
 
 // 測試用
 router.get("/try-sess", (req, res) => {
