@@ -13,32 +13,46 @@ const router = express.Router();
 
  */
 
-// 取得所有商品 + 篩選 ?
-router.get("/", async (req, res) => {
-  res.json([req.baseUrl, req.url]);
+
+// 取得標記該tag項目
+router.get("/tag/:ptag", async (req, res) => {
+  let p = await Product.getByTag(req.params.ptag);
+  res.json(p);
 });
+
+// 取得最新項目
+router.get("/latest", async (req, res) => {
+  let p = await Product.getLatest();
+  res.json(p);
+});
+
+// 取得所有商品 + 篩選 ?
+// router.get("/", async (req, res) => {
+//   res.json([req.baseUrl, req.url]);
+// });
 
 // 新增商品測試
-router.get("/add", async (req, res) => {
-  const p1 = new Product({
-    author: "abc",
-    bookname: "XX大全",
-  });
-  const obj1 = await p1.save();
+// router.get("/add", async (req, res) => {
+//   const p1 = new Product({
+//     author: "abc",
+//     bookname: "XX大全",
+//   });
+//   const obj1 = await p1.save();
 
-  const p2 = await Product.getItem(23);
-  p2.data.author = "林小新2";
-  const obj2 = await p2.save();
+//   const p2 = await Product.getItem(23);
+//   p2.data.author = "林小新2";
+//   const obj2 = await p2.save();
 
-  const p3 = await Product.getItem(25);
-  res.json([req.baseUrl, req.url, obj1, obj2, await p3.remove()]);
-});
+//   const p3 = await Product.getItem(25);
+//   res.json([req.baseUrl, req.url, obj1, obj2, await p3.remove()]);
+// });
 
 // 取得單項商品
-router.get("/all", async (req, res) => {
-  res.json(await Product.getRows({ id: "12" }));
-  //   res.json(await Product.getItem(12));
-});
+// router.get("/all", async (req, res) => {
+//   res.json(await Product.getRows({ id: "12" }));
+//   //   res.json(await Product.getItem(12));
+// });
+
 
 // 取得單項商品
 router.get("/:sid", async (req, res) => {

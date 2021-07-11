@@ -1,6 +1,8 @@
 const mysql = require("mysql2");
 
 const pool = mysql.createPool({
+  // 網路版設定:請將host更換=> 184.168.103.196
+  // host: "184.168.103.196"
   host: "localhost",
   user: "dblink",
   password: "campfun2021",

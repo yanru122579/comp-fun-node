@@ -23,6 +23,27 @@ class Product {
     this.data = { ...defaultData, ...data };
   }
 
+  //實際使用功能
+  //抓取所有該tag下的商品
+  static async getByTag(ptag) {
+    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_summary`,`productlist`.`product_oimage`,`productlist`.`product_rate` FROM `productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id` WHERE `ptagmap`.`tagId` = ?" ;
+    let [r] = await db.query(sql, [ptag]);
+    console.log(r);
+    return r;
+  }
+
+    //抓取最新購買的商品(熱門8筆)
+    static async getLatest() {
+      let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_oimage`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` ORDER BY `productlist`.`updated_at` DESC LIMIT 8 " ;
+      let [r] = await db.query(sql);
+      console.log(r);
+      return r;
+    }
+
+
+
+
+  // 以下範例未使用
   // 儲存：新增 或 修改
   async save() {
     // 如果 sid 為 null, 表示是新建的物件
