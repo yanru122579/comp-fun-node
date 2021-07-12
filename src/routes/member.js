@@ -280,8 +280,17 @@ router.get('/verifyMemberData',(req,res)=>{
   });
 })
 
-// 新增地址
-router.post('/adressbook', (req, res, next) => {
+// 地址: 讀取單一會員地址
+router.get('/addressbook', (req, res, next) => {
+
+  console.log(req.bearer)
+  let mId = req.bearer.mId
+  executeSQL(User.getUserAddressByIdSQL(mId), res, 'get', true)
+})
+
+
+// 地址: 新增地址
+router.post('/addressbook', (req, res, next) => {
   // 測試response，會自動解析為物件
   // console.log(typeof req.body)
   console.log(req.body)
@@ -302,9 +311,36 @@ router.post('/adressbook', (req, res, next) => {
     township = req.body.township,
     naa = req.body.naa
   )
+
   console.log(user)
   executeSQL(user.addAdressSQL(mId), res, 'post', false, user)
-  
+})
+
+// 地址: 修改地址
+router.put('/addressbook', (req, res, next) => {
+  // 測試response，會自動解析為物件
+  // console.log(typeof req.body)
+  console.log(req.body)
+
+  let mId = req.bearer.mId
+  let user = new User(
+    id = 0,
+    email = req.bearer.email,
+    password = '',
+    fName = req.body.fName,
+    lName = req.body.lName,
+    nickname = req.body.nickname,
+    birthday = req.body.birthday,
+    phone = req.body.phone,
+    gender = req.body.gender,
+    avatar = req.bearer.avatar,
+    country = req.body.country,
+    township = req.body.township,
+    naa = req.body.naa
+  )
+    let addressId = req.body.addressId
+  console.log(user)
+  executeSQL(user.addAdressSQL(addressId), res, 'put', false, user)
 })
 
 // 測試用

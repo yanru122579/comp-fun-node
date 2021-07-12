@@ -24,8 +24,15 @@ class User {
   }
   // 新增地址
   addAdressSQL(id) {
-    let sql = `INSERT INTO adressbook(mId, country, township, naa, created_at) \
-                   VALUES('${id}', '${this.country}','${this.township}','${this.naa}', NOW())`
+    let sql = `INSERT INTO addressbook(mId, country, township, naa, created_at) \
+              VALUES('${id}', '${this.country}','${this.township}','${this.naa}', NOW())`
+    return sql
+  }
+  // 修改地址
+  addAdressSQL(id) {
+    let sql = `UPDATE addressbook \
+              SET country = '${this.country}', township = '${this.township}',\
+              naa = '${this.naa}' WHERE addressId = ${id}`
     return sql
   }
 
@@ -54,6 +61,11 @@ class User {
   // static是與實例化無關
   static getUserByIdSQL(id) {
     let sql = `SELECT * FROM Member WHERE mId = ${id}`
+    return sql
+  }
+  // static是與實例化無關
+  static getUserAddressByIdSQL(id) {
+    let sql = `SELECT * FROM addressbook WHERE mId = ${id}`
     return sql
   }
 
