@@ -116,7 +116,7 @@ class Articles {
     // 讀取單一標籤所帶多篇文章 (1 tag to multiple posts)
     static async getTagFilterArticles(tagId){
         if(!tagId) return null;
-        let sql = "SELECT `articleList`.`aId`, `articleList`.`aTitle`, `articleList`.`aImg`, `articleList`.`author`, `articleList`.`aContent`, `articleList`.`aCategoryId`, `articleList`.`aDate`,`articleList`.`created_at`, `articleList`.`updated_at`,        `aCategoryList`.`aCatName`, `ataglist`.`tagName`, `ataglist`.`tagId` FROM `articleList`  INNER JOIN `aCategoryList` ON `articleList`.`aCategoryId` = `aCategoryList`.`aCatId`     INNER JOIN `atagmap` ON `articlelist`.`aId` = `atagmap`.`aId` INNER JOIN `ataglist` ON `ataglist`.`tagId` = `atagmap`.`tagId` WHERE FIND_IN_SET(`atagmap`.`tagId`, ?)"
+        let sql = "SELECT `articleList`.`aId`, `articleList`.`aTitle`, `articleList`.`aImg`, `articleList`.`author`, `articleList`.`aContent`, `articleList`.`aCategoryId`, `articleList`.`aDate`,`articleList`.`created_at`, `articleList`.`updated_at`, `aCategoryList`.`aCatName`, `ataglist`.`tagName`, `ataglist`.`tagId` FROM `articleList`  INNER JOIN `aCategoryList` ON `articleList`.`aCategoryId` = `aCategoryList`.`aCatId` INNER JOIN `atagmap` ON `articlelist`.`aId` = `atagmap`.`aId` INNER JOIN `ataglist` ON `ataglist`.`tagId` = `atagmap`.`tagId` WHERE FIND_IN_SET(`atagmap`.`tagId`, ?)"
         // 回傳取得類別資料的陣列
         let [r] = await db.query(sql, [tagId]);
         if(!r || !r.length){
@@ -130,9 +130,9 @@ class Articles {
 
 
     // 讀取單篇文章 
-    static async getRow(aId){
+    static async getPost(aId){
         if(!aId) return null;
-        let sql = "SELECT * FROM `articlelist` WHERE `aId`=?"
+        let sql = "SELECT * FROM `articlelist` INNER JOIN `aCategoryList` ON `articleList`.`aCategoryId` = `aCategoryList`.`aCatId` WHERE `aId`=?"
         // 回傳取得單筆資料的陣列
         let [r] = await db.query(sql, [aId]);
         if(!r || !r.length){
@@ -141,23 +141,39 @@ class Articles {
         return r[0]; 
     }
 
+    // 讀取分類名稱 on breadcrumb
+      static async getCateName(aCategoryId){
+        if(!aCategoryId) return null;
+        let sql =  "SELECT * FROM `articlelist` JOIN `acategorylist` ON `articlelist`.`aCategoryId` = `acategorylist`.`aCatId` WHERE `aCategoryId` =?"
+        let [r] = await db.query(sql, [aCategoryId]);
+        if(!r || !r.length){
+          return null;
+        }
+        return r[0];
+        
+      }
+    
+    // 讀取標籤名稱 on breadcrumb
+    static async getTagName(tagId) {
+      if(!tagId) return null;
+        let sql = "SELECT `articleList`.`aId`, `articleList`.`aTitle`, `articleList`.`aImg`, `articleList`.`author`, `articleList`.`aContent`, `articleList`.`aCategoryId`, `articleList`.`aDate`,`articleList`.`created_at`, `articleList`.`updated_at`, `aCategoryList`.`aCatName`, `ataglist`.`tagName`, `ataglist`.`tagId` FROM `articleList`  INNER JOIN `aCategoryList` ON `articleList`.`aCategoryId` = `aCategoryList`.`aCatId` INNER JOIN `atagmap` ON `articlelist`.`aId` = `atagmap`.`aId` INNER JOIN `ataglist` ON `ataglist`.`tagId` = `atagmap`.`tagId` WHERE FIND_IN_SET(`atagmap`.`tagId`, ?)"
+        // 回傳取得類別資料的陣列
+        let [r] = await db.query(sql, [tagId]);
+        if(!r || !r.length){
+            return null;
+        }
+        return r[0]; 
+    } 
+
     // 讀取首頁最新標籤
     static async getTag(){
         let sql =  "SELECT * FROM `ataglist` ORDER BY `created_at` DESC LIMIT 8"
         let [r] = await db.query(sql);
         return {
           r
-        } 
+        }
     }
       
-    // // 讀取分類
-    // static async getCateName(){
-    //   let sql =  "SELECT * FROM `articlelist` WHERE 1"
-    //   let [r] = await db.query(sql);
-    //   return {
-    //     r
-    //   }
-    // }
 
 
 }
