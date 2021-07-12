@@ -29,10 +29,16 @@ class User {
     return sql
   }
   // 修改地址
-  addAdressSQL(id) {
+  updateAdressSQL(id) {
     let sql = `UPDATE addressbook \
               SET country = '${this.country}', township = '${this.township}',\
               naa = '${this.naa}' WHERE addressId = ${id}`
+    return sql
+  }
+
+  // 刪除地址
+  static deleteUserByIdSQL(id) {
+    let sql = `DELETE FROM addressbook WHERE addressId = ${id}`
     return sql
   }
 
@@ -56,6 +62,8 @@ class User {
     let sql = `SELECT * FROM Member WHERE email = '${this.email}' LIMIT 0,1`
     return sql
   }
+
+  
 
   
   // static是與實例化無關

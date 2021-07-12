@@ -340,7 +340,12 @@ router.put('/addressbook', (req, res, next) => {
   )
     let addressId = req.body.addressId
   console.log(user)
-  executeSQL(user.addAdressSQL(addressId), res, 'put', false, user)
+  executeSQL(user.updateAdressSQL(addressId), res, 'put', false, user)
+})
+
+//delete 刪除一筆資料
+router.delete('/address/:addressId', (req, res, next) => {
+  executeSQL(User.deleteUserByIdSQL(req.params.addressId), res, 'delete', false)
 })
 
 // 測試用
