@@ -12,7 +12,6 @@ const router = express.Router();
 //   res.json(Articles.getTest(req.url));
 // });
 
-
 // 取得最新
 router.get('/latest', async(req, res)=>{
   console.log('latest')
@@ -26,12 +25,23 @@ router.get('/cate/:aCategoryId', async(req, res)=>{
   res.json(p);
 });
 
-// 取得類別名
+// 取得類別5篇
 router.get('/cate/top/:aCategoryId', async(req, res)=>{
   let p = await Articles.getCateTop(req.params.aCategoryId)    
   res.json(p);
 });
 
+// 取得分類名稱
+router.get('/cate/name/:aCategoryId', async(req, res)=>{
+  let p = await Articles.getCateName(req.params.aCategoryId)    
+  res.json(p);
+});
+
+// 取得標籤名稱
+router.get('/tag/name/:tagId', async(req, res)=>{
+  let p = await Articles.getTagName(req.params.tagId)    
+  res.json(p);
+});
 
 // 取得單篇文章所帶多個標籤
 router.get('/a/tag/:aId', async(req, res)=>{
@@ -45,13 +55,11 @@ router.get('/tag/:tagId', async(req, res)=>{
   res.json(p);
 })
 
-
 // 取得單篇文章
 router.get('/a/:aId', async(req, res)=>{
-  let p = await Articles.getRow(req.params.aId)    
+  let p = await Articles.getPost(req.params.aId)    
   res.json(p);
 });
-
 
 // 取得首頁最新標籤
 router.get('/tag', async(req, res)=>{
@@ -60,11 +68,9 @@ router.get('/tag', async(req, res)=>{
   res.json(p)
 })
 
-
 // 取得全部
 router.get('/', async(req, res)=>{
   res.json(await Articles.getRows());
-}); 
-
+});
 
 module.exports = router;

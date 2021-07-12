@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
--- 主機： 127.0.0.1
--- 產生時間： 2021-07-08 14:22:15
--- 伺服器版本： 10.4.18-MariaDB
--- PHP 版本： 8.0.5
+-- 主機： localhost
+-- 產生時間： 2021 年 07 月 12 日 03:20
+-- 伺服器版本： 10.4.19-MariaDB
+-- PHP 版本： 8.0.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- 資料庫： `campfun`
+-- 資料庫: `campfun`
 --
 
 -- --------------------------------------------------------
