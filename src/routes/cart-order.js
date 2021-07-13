@@ -21,19 +21,23 @@ const getListData = async (req) => {
   };
   //設定條件篩選 我拿來篩類別的 後面會用到可以先把要篩的都放這裡
   const orderClass = req.query.orderClass;
-  const category = ` WHERE cartorder.orderclass = '${+orderClass}'`;
+  const category = ` AND cartorder.orderclass = '${+orderClass}'`;
   //設定交易狀態
   const cartStatus = req.query.cartStatus;
   const cartStatus1 = ` AND cartorder.cartStatus= '${cartStatus}'`;
-
+  //設定會員
+  const mid = req.query.mid;
+  const mid1 = ` AND cartorder.mid= '${mid}'`;
   //設定頁數
   let page = req.query.page || 1;
   //將數字轉成整數
   page = parseInt(page);
   //搜尋總表  看總筆數
-  let t_sql = "SELECT COUNT(1) num FROM cartorder ";
+  let t_sql = "SELECT COUNT(1) num FROM cartorder WHERE 1";
   //將上面的篩選類別拿下來使用 如果我的網址有類別 就總筆數where類別
   orderClass ? (t_sql += category) : t_sql;
+  cartStatus ? (t_sql += cartStatus1) : t_sql;
+  mid ? (t_sql += mid1) : t_sql;
   //去資料庫找總表的總筆數
   let [r1] = await db.query(t_sql);
   const perPage = 5; // 每頁要呈現幾筆資料
@@ -51,7 +55,7 @@ const getListData = async (req) => {
     }
     //上面篩類別與總筆數頁數的設定  下面搜所有物品
     //也是搜尋總表 但因為我要搭配購買商品 所以我join商品
-    let sql = `SELECT cartOrder.cartOrderId,cartOrder.created_at,member.fName,cartOrder.nNN,cartOrder.countries,cartOrder.townships,cartOrder.nAA,cartOrder.nCC,cartOrder.cartStatus,cartLogistics.cartLogisticsName,carPay.cartPayName,cartOrder.cartTotal,cartOrder.cartDescription,cartorder.orderclass FROM cartOrder INNER JOIN member ON cartOrder.mid = member.mId INNER JOIN carPay ON cartOrder.cartPayId = carPay.cartPayId INNER JOIN cartLogistics ON cartOrder.cartLogisticsId = cartLogistics.cartLogisticsId`;
+    let sql = `SELECT cartOrder.cartOrderId,cartOrder.created_at,member.fName,cartOrder.nNN,cartOrder.countries,cartOrder.mid,cartOrder.townships,cartOrder.nAA,cartOrder.nCC,cartOrder.cartStatus,cartLogistics.cartLogisticsName,carPay.cartPayName,cartOrder.cartTotal,cartOrder.cartDescription,cartorder.orderclass FROM cartOrder INNER JOIN member ON cartOrder.mid = member.mId INNER JOIN carPay ON cartOrder.cartPayId = carPay.cartPayId INNER JOIN cartLogistics ON cartOrder.cartLogisticsId = cartLogistics.cartLogisticsId`;
     //定義排序 用時間 最新到最舊 與設定頁數
     const limit = ` ORDER BY cartOrder.created_at DESC LIMIT ${
       (page - 1) * perPage
@@ -59,6 +63,7 @@ const getListData = async (req) => {
     //如果網址上有類別 就將sql+上where 去篩類別
     orderClass ? (sql += category) : sql;
     cartStatus ? (sql += cartStatus1) : sql;
+    mid ? (sql += mid1) : sql;
     //sql 再加上排序與頁數的變數
     sql += limit;
     //將sql去資料庫做搜尋 丟回[row]
