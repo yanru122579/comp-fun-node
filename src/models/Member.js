@@ -1,6 +1,6 @@
 // 會員 SQL
 class User {
-  constructor(id,email, password, fName, lName,nickname , birthday, phone, gender, avatar, country, township, naa) {
+  constructor(id,email, password, fName, lName,nickname , birthday, phone, gender, avatar, country, township, naa, newPassword) {
     this.id = 0
     this.email = email
     this.password = password
@@ -14,6 +14,7 @@ class User {
     this.country = country
     this.	township = 	township
     this.naa = naa
+    this.newPassword = newPassword
   }
 
   // 新增會員
@@ -60,6 +61,17 @@ class User {
   // login用
   getUserUserByUsernameAndPasswordSQL() {
     let sql = `SELECT * FROM Member WHERE email = '${this.email}' LIMIT 0,1`
+    return sql
+  }
+  // 檢查密碼用用
+  getPasswordSQL(mId) {
+    let sql = `SELECT * FROM Member WHERE mId = '${mId}' LIMIT 0,1`
+    return sql
+  }
+  // 更新密碼用用
+  putPasswordSQL(mId,userNewPassword) {
+    let sql = `UPDATE Member \
+              SET password = '${userNewPassword}' WHERE mId = '${mId}' `
     return sql
   }
 

@@ -152,6 +152,41 @@ async function userLogin(sql, req, res, userPassword) {
       res.status(200).json(data)
     })
 }
+// 修改密碼用
+async function checkPassword(sql, req, res,userPassword,userNewPassword,user,mId) {
+
+    const data = {
+      success: false,
+      message: '初始錯誤訊息'
+    };
+    
+    const [rows] = await db.query(sql)
+
+    let result = {}
+
+    if (rows.length < 1) {
+      data.message= '未找到相對應帳號'
+      return res.status(200).json(data)
+    }
+
+    result = rows[0]
+    // console.log(result,userPassword,result.password)
+
+    bcryptjs.compare(userPassword,result.password,function(err,compareResult){
+      console.log(compareResult)
+      if(!compareResult ){
+        data.message = '密碼錯誤'
+        return res.status(405).json(data)
+      }
+      data.success = true;
+      data.message = '密碼正確'
+      console.log(mId)
+      bcryptjs.hash(userNewPassword,10,function(err,hash){
+
+      executeSQL(user.putPasswordSQL(mId,hash), res, 'put', false, user)
+      })
+    })
+}
 
 // 處理會員登入
 router.post('/login', function (req, res, next) {
@@ -270,6 +305,36 @@ router.put('/userdata/', (req, res) => {
   // user.id = +req.bearer.mId
 
   executeSQL(user.updateUserByIdSQL(mId), res, 'put', false, user)
+})
+
+// 修改登入密碼
+router.post('/editPassword', (req, res, next) => {
+  // console.log(req.bearer.mId)
+  // console.log(req.body)
+
+  let mId = req.bearer.mId
+  let user = new User(
+    id = 0,
+    email = req.bearer.email,
+    password = req.body.password,
+    fName = req.body.fName,
+    lName = req.body.lName,
+    nickname = req.body.nickname,
+    birthday = req.body.birthday,
+    phone = req.body.phone,
+    gender = req.body.gender,
+    avatar = req.bearer.avatar,
+    country = req.body.country,
+    township = req.body.township,
+    naa = req.body.naa,
+    newPassword = req.body.newPassword
+  )
+  const userPassword = req.body.password
+  const userNewPassword = req.body.newPassword
+  // id值為數字
+  mId = req.bearer.mId
+  // console.log(user)
+  checkPassword(user.getPasswordSQL(mId), res,res,userPassword,userNewPassword,user,mId)
 })
 
 // 解析token
