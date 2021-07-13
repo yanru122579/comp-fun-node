@@ -1,16 +1,10 @@
 //情報誌api路由
+const { json } = require("express");
 const express = require("express");
-
 const Articles = require(__dirname + "/../models/Articles");
-
 const router = express.Router();
 
-
 //路由請由此開始設定
-//範例:
-// router.get("/", async (req, res) => {
-//   res.json(Articles.getTest(req.url));
-// });
 
 // 取得最新
 router.get('/latest', async(req, res)=>{
@@ -50,10 +44,16 @@ router.get('/a/tag/:aId', async(req, res)=>{
 })
 
 // 取得單一標籤所帶文章
-router.get('/tag/:tagId', async(req, res)=>{
+router.get('/tags/:tagId', async(req, res)=>{
   let p = await Articles.getTagFilterArticles(req.params.tagId)
   res.json(p);
 })
+
+///// 取得標記該tag項目 /////
+router.get("/tag/:ptag", async (req, res) => {
+  let p = await Articles.getByTag(req.params.ptag)
+  res.json(p);
+});
 
 // 取得單篇文章
 router.get('/a/:aId', async(req, res)=>{
@@ -69,8 +69,15 @@ router.get('/tag', async(req, res)=>{
 })
 
 // 取得全部
-router.get('/', async(req, res)=>{
+router.get('/allpost', async(req, res)=>{
   res.json(await Articles.getRows());
 });
+
+// 取得留言板資料
+router.get('/comment', async(req, res)=>{
+  console.log('comment')
+  let p = await Articles.getComment(req)
+  res.json(p)
+})
 
 module.exports = router;
