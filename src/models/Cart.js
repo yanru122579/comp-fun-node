@@ -1,4 +1,4 @@
-const db = require(__dirname + "/../modules/mysql2-connect");
+const db = require(__dirname + "/../modules/mysql-connect");
 const cartName = "cart1";
 //購物車SQL
 //取得購物車的內容
@@ -26,8 +26,10 @@ class Cart {
     if (!results.length) {
       //如果沒有在購物車裡面
       //TODO:檢查有沒有這項商品
+      // let sql =
+      //   "SELECT `sid`, `author`, `bookname`, `category_sid`, `book_id`, `publish_date`, `pages`, `price` FROM products WHERE sid=?";
       let sql =
-        "SELECT `sid`, `author`, `bookname`, `category_sid`, `book_id`, `publish_date`, `pages`, `price` FROM products WHERE sid=?";
+        "SELECT `product_id`, `product_name`, `product_desc`, `product_price`, `qty` FROM productlist WHERE product_id=?";
       let [rs] = await db.query(sql, [itemSid]);
       if (rs && rs.length) {
         //push物件
@@ -54,7 +56,7 @@ class Cart {
     //[{sid:1,quantity:2},{sid:1,quantity:3}]
     let cart = session[cartName];
     //如果有的話 他會是一個arr
-    let results = cart.filter((el) => +itemSid === el.sid);
+    let results = cart.filter((el) => +itemSid === el.product_id);
     if (results.length) {
       results[0].quantity = quantity;
       output.success = true;
@@ -77,7 +79,7 @@ class Cart {
     let cart = session[cartName];
     let oriLength = cart.length;
     //如果有的話 他會是一個arr
-    session[cartName] = cart.filter((el) => +itemSid !== el.sid);
+    session[cartName] = cart.filter((el) => +itemSid !== el.product_id);
     if (session[cartName].length !== oriLength) {
       output.success = true;
     }
