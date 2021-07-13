@@ -19,8 +19,6 @@ const getListData = async (req) => {
     page: 0,
     rows: [],
   };
-<<<<<<< Updated upstream
-=======
   //設定條件篩選 我拿來篩類別的 後面會用到可以先把要篩的都放這裡
   const orderClass = req.query.orderClass;
   const category = ` AND cartorder.orderclass = '${+orderClass}'`;
@@ -31,12 +29,8 @@ const getListData = async (req) => {
   const mid = req.query.mid;
   const mid1 = ` AND cartorder.mid= '${mid}'`;
   //設定頁數
->>>>>>> Stashed changes
   let page = req.query.page || 1;
   page = parseInt(page);
-<<<<<<< Updated upstream
-  let t_sql = "SELECT COUNT(1) num FROM cartorder ";
-=======
   //搜尋總表  看總筆數
   let t_sql = "SELECT COUNT(1) num FROM cartorder WHERE 1";
   //將上面的篩選類別拿下來使用 如果我的網址有類別 就總筆數where類別
@@ -44,7 +38,6 @@ const getListData = async (req) => {
   cartStatus ? (t_sql += cartStatus1) : t_sql;
   mid ? (t_sql += mid1) : t_sql;
   //去資料庫找總表的總筆數
->>>>>>> Stashed changes
   let [r1] = await db.query(t_sql);
   const perPage = 5; // 每頁要呈現幾筆資料
   const totalRows = r1[0].num; // 資料表的總筆數
@@ -59,14 +52,10 @@ const getListData = async (req) => {
       output.error = "page 值太大";
       return output;
     }
-<<<<<<< Updated upstream
-    let sql = `SELECT cartOrder.cartOrderId,cartOrder.created_at,member.name,cartOrder.nNN,cartOrder.nAA,cartOrder.nCC,cartOrder.cartStatus,cartLogistics.cartLogisticsName,carPay.cartPayName,cartOrder.cartTotal,cartOrder.cartDescription,cartorder.orderclass FROM cartOrder INNER JOIN member ON cartOrder.mid = member.mId INNER JOIN carPay ON cartOrder.cartPayId = carPay.cartPayId INNER JOIN cartLogistics ON cartOrder.cartLogisticsId = cartLogistics.cartLogisticsId`;
-=======
     //上面篩類別與總筆數頁數的設定  下面搜所有物品
     //也是搜尋總表 但因為我要搭配購買商品 所以我join商品
     let sql = `SELECT cartOrder.cartOrderId,cartOrder.created_at,member.fName,cartOrder.nNN,cartOrder.countries,cartOrder.mid,cartOrder.townships,cartOrder.nAA,cartOrder.nCC,cartOrder.cartStatus,cartLogistics.cartLogisticsName,carPay.cartPayName,cartOrder.cartTotal,cartOrder.cartDescription,cartorder.orderclass FROM cartOrder INNER JOIN member ON cartOrder.mid = member.mId INNER JOIN carPay ON cartOrder.cartPayId = carPay.cartPayId INNER JOIN cartLogistics ON cartOrder.cartLogisticsId = cartLogistics.cartLogisticsId`;
     //定義排序 用時間 最新到最舊 與設定頁數
->>>>>>> Stashed changes
     const limit = ` ORDER BY cartOrder.created_at DESC LIMIT ${
       (page - 1) * perPage
     }, ${perPage}`;
@@ -74,13 +63,9 @@ const getListData = async (req) => {
     const orderClass = req.query.orderClass;
     const category = ` WHERE cartorder.orderclass = '${orderClass}'`;
     orderClass ? (sql += category) : sql;
-<<<<<<< Updated upstream
-
-=======
     cartStatus ? (sql += cartStatus1) : sql;
     mid ? (sql += mid1) : sql;
     //sql 再加上排序與頁數的變數
->>>>>>> Stashed changes
     sql += limit;
     [rows] = await db.query(sql);
     rows.forEach((el) => {
