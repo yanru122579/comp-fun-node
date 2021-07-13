@@ -6,7 +6,14 @@ const MysqlStore = require("express-mysql-session")(session);
 const db = require(__dirname + "/modules/mysql2-connect");
 const sessionStore = new MysqlStore({}, db);
 const cors = require("cors");
-
+//測試金流
+const sha256 = require("sha256");
+const spgateway = {
+  HashKey: process.env.HASHKEY,
+  HashIV: process.env.HASHIV,
+  MerchantID: process.env.MERCHANTID,
+};
+console.log(spgateway);
 
 const upload = require(__dirname + "/modules/upload-img");
 
