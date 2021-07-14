@@ -199,10 +199,10 @@ class Articles {
         name: '',
         content: '',
         avatar: '[]',
-        mId: '',
-        aId: '',
-        created_at:'',
-        updated_at:'',
+        mId: 0,
+        aId: 0,
+        // created_at:'',
+        // updated_at:'',
       };
       this.data = {...defaultData, ...data};
     }
