@@ -1,17 +1,11 @@
 //情報誌api路由
+const { json } = require("express");
 const express = require("express");
-
 const Articles = require(__dirname + "/../models/Articles");
-
 const router = express.Router();
-
+const upload = require(__dirname + "/../modules/upload-img")
 
 //路由請由此開始設定
-//範例:
-// router.get("/", async (req, res) => {
-//   res.json(Articles.getTest(req.url));
-// });
-
 
 // 取得最新
 router.get('/latest', async(req, res)=>{
@@ -26,12 +20,23 @@ router.get('/cate/:aCategoryId', async(req, res)=>{
   res.json(p);
 });
 
-// 取得類別名
+// 取得類別5篇
 router.get('/cate/top/:aCategoryId', async(req, res)=>{
   let p = await Articles.getCateTop(req.params.aCategoryId)    
   res.json(p);
 });
 
+// 取得分類名稱
+router.get('/cate/name/:aCategoryId', async(req, res)=>{
+  let p = await Articles.getCateName(req.params.aCategoryId)    
+  res.json(p);
+});
+
+// 取得標籤名稱
+router.get('/tag/name/:tagId', async(req, res)=>{
+  let p = await Articles.getTagName(req.params.tagId)    
+  res.json(p);
+});
 
 // 取得單篇文章所帶多個標籤
 router.get('/a/tag/:aId', async(req, res)=>{
@@ -40,18 +45,22 @@ router.get('/a/tag/:aId', async(req, res)=>{
 })
 
 // 取得單一標籤所帶文章
-router.get('/tag/:tagId', async(req, res)=>{
+router.get('/tags/:tagId', async(req, res)=>{
   let p = await Articles.getTagFilterArticles(req.params.tagId)
   res.json(p);
 })
 
-
-// 取得單篇文章
-router.get('/a/:aId', async(req, res)=>{
-  let p = await Articles.getRow(req.params.aId)    
+///// 取得標記該tag項目 /////
+router.get("/tag/:ptag", async (req, res) => {
+  let p = await Articles.getByTag(req.params.ptag)
   res.json(p);
 });
 
+// 取得單篇文章
+router.get('/a/:aId', async(req, res)=>{
+  let p = await Articles.getPost(req.params.aId)    
+  res.json(p);
+});
 
 // 取得首頁最新標籤
 router.get('/tag', async(req, res)=>{
@@ -60,11 +69,29 @@ router.get('/tag', async(req, res)=>{
   res.json(p)
 })
 
-
 // 取得全部
-router.get('/', async(req, res)=>{
+router.get('/allpost', async(req, res)=>{
   res.json(await Articles.getRows());
-}); 
+});
+
+// 取得留言板
+router.get('/comment', async(req, res)=>{
+  let p = await Articles.getComment(req)
+  res.json(p)
+})
+
+// test新增留言板
+router.post('/comment/add', async(req, res)=>{ 
+  console.log(req)
+  const c = new Articles({
+    
+    name: req.body.name,
+    content: req.body.content,
+  });
+  // console.log(req)
+  const newCid = await c.add();
+  res.json([req.baseUrl, req.url, newCid]);
+});
 
 
 module.exports = router;

@@ -24,6 +24,14 @@ class Product {
   }
 
   //實際使用功能
+  //抓取單項商品所有資料
+  static async getItemById(pid) {
+    let sql = "SELECT * FROM `productlist` WHERE `product_id`= ?" ;
+    let [r] = await db.query(sql, [pid]);
+    console.log(r);
+    return r;
+  }
+
   //抓取所有該tag下的商品
   static async getByTag(ptag) {
     let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM `productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id` WHERE `ptagmap`.`tagId` = ?" ;
