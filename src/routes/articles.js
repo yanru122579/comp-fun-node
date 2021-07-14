@@ -73,11 +73,21 @@ router.get('/allpost', async(req, res)=>{
   res.json(await Articles.getRows());
 });
 
-// 取得留言板資料
+// 取得留言板
 router.get('/comment', async(req, res)=>{
-  console.log('comment')
   let p = await Articles.getComment(req)
   res.json(p)
 })
+
+// test新增留言板
+router.get('/comment/add', async(req, res)=>{ 
+  const c = new Articles({
+    name: 'ABC',
+    content: 'hello',
+  });
+  const newCid = await c.add();
+  res.json([req.baseUrl, req.url, newCid]);
+});
+
 
 module.exports = router;
