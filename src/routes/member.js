@@ -117,7 +117,8 @@ async function userLogin(sql, req, res, userPassword) {
 
     const data = {
       success: false,
-      message: '沒有 account 或沒有 password 欄位'
+      message: '沒有 account 或沒有 password 欄位',
+      email:false,
     };
     
     const [rows] = await db.query(sql)
