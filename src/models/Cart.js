@@ -29,7 +29,7 @@ class Cart {
       // let sql =
       //   "SELECT `sid`, `author`, `bookname`, `category_sid`, `book_id`, `publish_date`, `pages`, `price` FROM products WHERE sid=?";
       let sql =
-        "SELECT `product_id`, `product_name`, `product_desc`, `product_price`, `qty` FROM productlist WHERE product_id=?";
+        "SELECT `product_id`, `product_name`, `product_desc`, `product_price`, `qty`,`product_oimg` FROM productlist WHERE product_id=?";
       let [rs] = await db.query(sql, [itemSid]);
       if (rs && rs.length) {
         //push物件
