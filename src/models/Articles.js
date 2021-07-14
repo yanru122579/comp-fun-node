@@ -73,8 +73,7 @@ class Articles {
     static async getLatest(){
       let sql =  "SELECT * FROM `articlelist` ORDER BY `aDate` DESC LIMIT 3"
       let [r] = await db.query(sql);
-      return r
-      
+      return r      
     }
 
     // 讀取類別 
@@ -126,8 +125,15 @@ class Articles {
     }
 
 
-    // 讀取所有單篇文章標籤所帶商品
+    //// 讀取所有單篇文章 抓取所有該tag下的商品 ////
+    static async getByTag(ptag) {
+      let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_summary`,`productlist`.`product_oimage`,`productlist`.`product_rate` FROM `productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id` WHERE `ptagmap`.`tagId` = ?";
+      let [r] = await db.query(sql, [ptag]);
+      console.log(r);
+      return r;
+    }
 
+    //////////
 
     // 讀取單篇文章 
     static async getPost(aId){
@@ -173,7 +179,19 @@ class Articles {
           r
         }
     }
+
+    // 讀取留言板資料
+    static async getComment(cId){
+      if(!cId) return null;
+      let sql =  "SELECT * FROM `acommentlist` ORDER BY `created_at` ASC"
+      let [r] = await db.query(sql, [cId]);
+      if(!r || !r.length){
+        return null;
+      }
+      return r; 
+    }
       
+
 
 
 }
