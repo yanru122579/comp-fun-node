@@ -1,4 +1,5 @@
 require("dotenv").config();
+const moment = require("moment")
 const port = process.env.PORT || 4000; //api統一為port4000
 const express = require("express");
 const session = require("express-session");
@@ -33,7 +34,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(
   session({
-    saveUninitialized: false,
+    saveUninitialized: true,
     resave: false,
     secret: "kre94865790lkglkdjflkdfghlsrhddk", //這裡暫時沒改，有用到的自行調整並且告知其他人
     store: sessionStore,
@@ -68,6 +69,24 @@ app.use("/pickplace", require(__dirname + "/routes/pickplace"));
 
 //活動 -預留
 app.use("/event", require(__dirname + "/routes/event"));
+
+
+//共用預定時間api
+
+app.get("/timeset", (req, res) => {
+  req.session.time = req.query;
+  res.json(session.time)
+});
+
+app.get("/timecheck", (req, res) => {
+    req.session.time
+  res.json(req.session.time)
+});
+
+app.get("/timecheck2", (req, res) => {
+
+  res.json(req.session.time)
+});
 
 
 // 404 放在所有的路由後面

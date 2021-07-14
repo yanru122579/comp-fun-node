@@ -24,17 +24,63 @@ class Product {
   }
 
   //實際使用功能
-  //抓取所有該tag下的商品
-  static async getByTag(ptag) {
-    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_summary`,`productlist`.`product_oimage`,`productlist`.`product_rate` FROM `productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id` WHERE `ptagmap`.`tagId` = ?" ;
-    let [r] = await db.query(sql, [ptag]);
+  //抓取單項商品所有資料
+  static async getItemById(pid) {
+    let sql = "SELECT * FROM `productlist` WHERE `product_id`= ?" ;
+    let [r] = await db.query(sql, [pid]);
     console.log(r);
     return r;
   }
 
+  //抓取所有該tag下的商品
+  static async getByTag(ptag) {
+    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM `productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id` WHERE `ptagmap`.`tagId` = ?" ;
+    let [r] = await db.query(sql, [ptag]);
+    console.log(r);
+    return r;
+  }
+    //抓取多個tag下的商品
+  static async getByTags(ptag) {
+        console.log("ptag",ptag)
+        // ptag = [...ptag]
+        const data = []
+        let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM `productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id` WHERE `ptagmap`.`tagId` = ? AND `productlist`.`qty` > 0 LIMIT 2 " ;
+        for(let el of ptag){
+          let [p] = await db.query(sql,[el])
+          data.push(...p)
+        }
+        console.log(data)
+        return data
+  }
+
+  //抓取類別所有商品
+      static async getByCat(catid) {
+        
+        let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` WHERE `productlist`.`cat_id` = ? ORDER BY `productlist`.`updated_at`" ;
+        let [r] = await db.query(sql,catid);
+        console.log(r);
+        return r;
+      }
+
+   //抓取類別所有商品(卡片用)
+      static async getByCatCard(catidone,catidtwo) {
+        let sql = "SELECT `productlist`.`cat_id`,`productlist`.`product_id`,`productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` WHERE `productlist`.`cat_id` = ? ORDER BY `productlist`.`updated_at`" ;
+
+          let [r] = await db.query(sql,catidone)
+          // console.log(r)
+          if(catidtwo){
+            let [r2] = await db.query(sql,catidtwo)
+            // console.log (r2)
+            const data=r.concat(r2)
+            return data
+          }else{
+            return r
+          }          
+      }
+
     //抓取最新購買的商品(熱門8筆)
     static async getLatest() {
-      let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_oimage`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` ORDER BY `productlist`.`updated_at` DESC LIMIT 8 " ;
+      let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` ORDER BY `productlist`.`updated_at` DESC LIMIT 8 " ;
       let [r] = await db.query(sql);
       console.log(r);
       return r;

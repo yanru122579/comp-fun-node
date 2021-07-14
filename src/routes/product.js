@@ -13,10 +13,44 @@ const router = express.Router();
 
  */
 
+//取得單筆商品完整資料
+router.get("/item/:pid", async (req, res) => {
+  let p = await Product.getItemById(req.params.pid);
+  res.json(p);
+});
 
-// 取得標記該tag項目
+// 取得標記該tag的商品
 router.get("/tag/:ptag", async (req, res) => {
   let p = await Product.getByTag(req.params.ptag);
+  res.json(p);
+});
+
+// 取得多組TAG商品(每組2個)/product/tags/1/2/3/4/5/6/
+router.get("/tags/*", async (req, res) => {
+  const paramsArray = req.params[0].split('/');
+  // console.log(paramsArray)
+  let p = await Product.getByTags(paramsArray);
+  res.json(p);
+});
+
+// 取得最多5個tag
+// router.get("/tags/*", async (req, res) => {
+//   const paramsArray = req.params[0].split('/');
+//   paramsArray.map((value)=>{
+//     let p = await Product.getByTags(value);
+//   })
+//   res.json(p);
+// });
+
+// 取得類別所有項目
+router.get("/cat/:catid", async (req, res) => {
+  let p = await Product.getByCat(req.params.catid);
+  res.json(p);
+});
+
+// 取得雙類別卡片項目(a+b)
+router.get("/catone/:catidone/:catidtwo?", async (req, res) => {
+  let p = await Product.getByCatCard(req.params.catidone,req.params.catidtwo);
   res.json(p);
 });
 
@@ -25,6 +59,8 @@ router.get("/latest", async (req, res) => {
   let p = await Product.getLatest();
   res.json(p);
 });
+
+
 
 // 取得所有商品 + 篩選 ?
 // router.get("/", async (req, res) => {
@@ -55,9 +91,9 @@ router.get("/latest", async (req, res) => {
 
 
 // 取得單項商品
-router.get("/:sid", async (req, res) => {
-  let p = await Product.getRow(req.params.sid);
-  res.json([req.baseUrl, req.url, p]);
-});
+// router.get("/:sid", async (req, res) => {
+//   let p = await Product.getRow(req.params.sid);
+//   res.json([req.baseUrl, req.url, p]);
+// });
 
 module.exports = router;
