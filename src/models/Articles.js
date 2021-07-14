@@ -199,18 +199,18 @@ class Articles {
         name: '',
         content: '',
         avatar: '[]',
-        mId: '',
-        aId: '',
-        created_at:'',
-        updated_at:'',
+        mId: 0,
+        aId: 0,
+        // created_at:'',
+        // updated_at:'',
       };
       this.data = {...defaultData, ...data};
     }
 
     async add(){
-      if(this.data.cId) {
-        return false;
-      }
+      // if(this.data.cId) {
+      //   return false;
+      // }
       let sql = "INSERT INTO `acommentlist` SET ?";
       let [result] = await db.query(sql, [this.data]);
       return result.insertId;

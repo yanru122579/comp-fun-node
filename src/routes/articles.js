@@ -3,6 +3,7 @@ const { json } = require("express");
 const express = require("express");
 const Articles = require(__dirname + "/../models/Articles");
 const router = express.Router();
+const upload = require(__dirname + "/../modules/upload-img")
 
 //路由請由此開始設定
 
@@ -80,11 +81,14 @@ router.get('/comment', async(req, res)=>{
 })
 
 // test新增留言板
-router.get('/comment/add', async(req, res)=>{ 
+router.post('/comment/add', async(req, res)=>{ 
+  console.log(req)
   const c = new Articles({
-    name: 'ABC',
-    content: 'hello',
+    
+    name: req.body.name,
+    content: req.body.content,
   });
+  // console.log(req)
   const newCid = await c.add();
   res.json([req.baseUrl, req.url, newCid]);
 });
