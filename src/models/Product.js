@@ -34,7 +34,7 @@ class Product {
 
   //抓取10筆來自AID關聯商品
   static async getByAid(aid){
-    let sql = "SELECT * FROM (`productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id`) INNER JOIN `atagmap` ON `atagmap`.`tagId`=`ptagmap`.`tagId` WHERE `atagmap`.`aId` = ? GROUP BY `ptagmap`.`pId` LIMIT 10" ;
+    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM (`productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id`) INNER JOIN `atagmap` ON `atagmap`.`tagId`=`ptagmap`.`tagId` WHERE `atagmap`.`aId` = ? GROUP BY `ptagmap`.`pId` LIMIT 10" ;
     let[r] = await db.query(sql, [aid]);
     return r;
   }
