@@ -23,6 +23,12 @@ class User {
                    VALUES('${this.email}', '${this.password}', NOW())`
     return sql
   }
+  // 註冊送優惠
+  CouponSQL(mId) {
+    let sql = `INSERT INTO coupon(mId,newMember, created_at) \
+                   VALUES('${mId}','1', NOW())`
+    return sql
+  }
   // 新增地址
   addAdressSQL(id) {
     let sql = `INSERT INTO addressbook(mId, country, township, naa, created_at) \
