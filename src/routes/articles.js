@@ -50,12 +50,6 @@ router.get('/tags/:tagId', async(req, res)=>{
   res.json(p);
 })
 
-///// 取得標記該tag項目 /////
-router.get("/tag/:ptag", async (req, res) => {
-  let p = await Articles.getByTag(req.params.ptag)
-  res.json(p);
-});
-
 // 取得單篇文章
 router.get('/a/:aId', async(req, res)=>{
   let p = await Articles.getPost(req.params.aId)    
@@ -74,23 +68,23 @@ router.get('/allpost', async(req, res)=>{
   res.json(await Articles.getRows());
 });
 
+
+// 新增留言板
+router.post('/comment/add', upload.none(), async(req, res)=>{ 
+  console.log('body',req.body)
+  const c = new Articles({    
+    name: req.body.name,
+    content: req.body.comment,
+  });
+  
+  const newCid = await c.add();
+  res.json([req.baseUrl, req.url, newCid]);
+});
+
 // 取得留言板
 router.get('/comment', async(req, res)=>{
   let p = await Articles.getComment(req)
   res.json(p)
 })
-
-// test新增留言板
-router.post('/comment/add', async(req, res)=>{ 
-  console.log(req)
-  const c = new Articles({
-    name: req.body.name,
-    content: req.body.content,
-  });
-  // console.log(req)
-  const newCid = await c.add();
-  res.json([req.baseUrl, req.url, newCid]);
-});
-
 
 module.exports = router;

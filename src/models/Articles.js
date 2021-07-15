@@ -1,3 +1,4 @@
+// 取得類別
 const db = require(__dirname + "/../modules/mysql2-connect");
 
 // 情報誌SQL
@@ -126,16 +127,6 @@ class Articles {
     }
 
 
-    //// 讀取所有單篇文章 抓取所有該tag下的商品 ////
-    static async getByTag(ptag) {
-      let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_summary`,`productlist`.`product_oimage`,`productlist`.`product_rate` FROM `productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id` WHERE `ptagmap`.`tagId` = ?";
-      let [r] = await db.query(sql, [ptag]);
-      console.log(r);
-      return r;
-    }
-
-    //////////
-
     // 讀取單篇文章 
     static async getPost(aId){
         if(!aId) return null;
@@ -156,8 +147,7 @@ class Articles {
         if(!r || !r.length){
           return null;
         }
-        return r[0];
-        
+        return r[0];        
       }
     
     // 讀取標籤名稱 on breadcrumb
@@ -208,9 +198,9 @@ class Articles {
     }
 
     async add(){
-      // if(this.data.cId) {
-      //   return false;
-      // }
+      if(this.data.cId) {
+        return false;
+      }
       let sql = "INSERT INTO `acommentlist` SET ?";
       let [result] = await db.query(sql, [this.data]);
       return result.insertId;
