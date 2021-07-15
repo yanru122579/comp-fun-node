@@ -16,6 +16,12 @@ const router = express.Router();
 //取得單筆商品完整資料
 router.get("/item/:pid", async (req, res) => {
   let p = await Product.getItemById(req.params.pid);
+  res.json(p[0]);
+});
+
+//取得單筆商品TAG
+router.get("/itemtag/:pid", async (req, res) => {
+  let p = await Product.getTagsBypId(req.params.pid);
   res.json(p);
 });
 
@@ -24,6 +30,13 @@ router.get("/tag/:ptag", async (req, res) => {
   let p = await Product.getByTag(req.params.ptag);
   res.json(p);
 });
+
+// 取得文章關聯商品(10筆)
+router.get("/aid/:aid", async (req, res) => {
+  let p = await Product.getByAid(req.params.aid);
+  res.json(p);
+});
+
 
 // 取得多組TAG商品(每組2個)/product/tags/1/2/3/4/5/6/
 router.get("/tags/*", async (req, res) => {

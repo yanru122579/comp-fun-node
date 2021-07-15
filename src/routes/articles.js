@@ -84,7 +84,6 @@ router.get('/comment', async(req, res)=>{
 router.post('/comment/add', async(req, res)=>{ 
   console.log(req)
   const c = new Articles({
-    
     name: req.body.name,
     content: req.body.content,
   });
