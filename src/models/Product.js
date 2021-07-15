@@ -23,12 +23,30 @@ class Product {
     this.data = { ...defaultData, ...data };
   }
 
+
   //實際使用功能
+  //抓取單項商品所有TAG
+  static async getTagsBypId(pid) {
+    let sql = "SELECT `ataglist`.`tagName`,`ptagmap`.`tagId` FROM `ptagmap` INNER JOIN `ataglist` ON `ataglist`.`tagId`=`ptagmap`.`tagId` WHERE `pId`= ?" ;
+    let [r] = await db.query(sql, [pid]);
+    return r;
+  }
+
+  //抓取10筆來自AID關聯商品
+  static async getByAid(aid){
+    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM (`productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id`) INNER JOIN `atagmap` ON `atagmap`.`tagId`=`ptagmap`.`tagId` WHERE `atagmap`.`aId` = ? GROUP BY `ptagmap`.`pId` LIMIT 10" ;
+    let[r] = await db.query(sql, [aid]);
+    return r;
+  }
+
+
+
+
+
   //抓取單項商品所有資料
   static async getItemById(pid) {
     let sql = "SELECT * FROM `productlist` WHERE `product_id`= ?" ;
     let [r] = await db.query(sql, [pid]);
-    console.log(r);
     return r;
   }
 
@@ -36,7 +54,6 @@ class Product {
   static async getByTag(ptag) {
     let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM `productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id` WHERE `ptagmap`.`tagId` = ?" ;
     let [r] = await db.query(sql, [ptag]);
-    console.log(r);
     return r;
   }
     //抓取多個tag下的商品
@@ -49,13 +66,11 @@ class Product {
           let [p] = await db.query(sql,[el])
           data.push(...p)
         }
-        console.log(data)
         return data
   }
 
   //抓取類別所有商品
       static async getByCat(catid) {
-        
         let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` WHERE `productlist`.`cat_id` = ? ORDER BY `productlist`.`updated_at`" ;
         let [r] = await db.query(sql,catid);
         console.log(r);
