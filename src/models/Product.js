@@ -25,6 +25,15 @@ class Product {
 
 
   //實際使用功能
+  //關鍵字搜尋商品
+  static async searchAll(key) {
+    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM `productlist` WHERE `product_name` LIKE '%"+key+"%' OR `product_summary` LIKE '%"+key+"%' OR `product_desc` LIKE '%"+key+"%'";
+    console.log(sql)
+    let [r] = await db.query(sql);
+    return r;
+  }
+
+
   //抓取單項商品所有TAG
   static async getTagsBypId(pid) {
     let sql = "SELECT `ataglist`.`tagName`,`ptagmap`.`tagId` FROM `ptagmap` INNER JOIN `ataglist` ON `ataglist`.`tagId`=`ptagmap`.`tagId` WHERE `pId`= ?" ;

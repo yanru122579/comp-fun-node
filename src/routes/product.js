@@ -8,9 +8,17 @@ const router = express.Router();
 
 /*
 列表 + 篩選 (包含關鍵字搜尋）
+   */
 
+router.get("/search", async (req, res) => {
+  const {key} = req.query;
+  let p = await Product.searchAll(key);
+  res.json(p);
+});
+
+
+/*
 單項商品
-
  */
 
 //取得單筆商品完整資料
