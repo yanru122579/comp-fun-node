@@ -17,6 +17,10 @@ const bcryptjs =require('bcryptjs');
 // jsonwebtoken
 const jwt =require('jsonwebtoken');
 
+// nodemailer
+const nodemailer = require('nodemailer')
+
+
 // 把JSONwebtoken放進檔頭
 router.use((req, res, next) => {
   // res.locals = {
@@ -67,6 +71,7 @@ async function executeSQL(
         // 合併id值
         const result = { ...instance, ...insertId }
         //回傳
+        console.log(result)
         res.status(200).json(result)
         break
       }
@@ -139,12 +144,12 @@ async function userLogin(sql, req, res, userPassword) {
         data.message = '帳號或密碼錯誤(密碼)'
         return res.status(405).json(data)
       }
-      data.success = true;
+      data.success = true
       data.message = '登入成功'
       const {mId, email, fName, lName,nickname, phone, avatar} = result
 
-      
-      data.token = jwt.sign({mId, email, fName, lName,nickname, phone ,avatar}, process.env.TOKEN_SECRECT);
+      data.mId = mId
+      data.token = jwt.sign({mId, email, fName, lName,nickname, phone ,avatar}, process.env.TOKEN_SECRECT)
 
       data.information = {email,nickname,avatar}
       // 這段可以測試解密
@@ -189,6 +194,25 @@ async function checkPassword(sql, req, res,userPassword,userNewPassword,user,mId
     })
 }
 
+async function registerGiveCoupon(
+  sql, 
+  res, 
+  method = 'get',
+  multirows = true, 
+  instance = {}
+  ){
+  const [rows, fields] = await db.query(sql)
+  const insertId = { id: rows.insertId }
+  const result = { ...instance, ...insertId }
+  console.log(result)
+  let mId = result.id
+  let user = new User()
+  executeSQL(user.CouponSQL(mId), res, 'post', false, user)
+}
+
+
+
+
 // 處理會員登入
 router.post('/login', function (req, res, next) {
   
@@ -221,9 +245,6 @@ router.get('/logout', function (req, res, next) {
 
 // 新增會員
 router.post('/register', (req, res, next) => {
-  // 測試response，會自動解析為物件
-  // console.log(typeof req.body)
-  // console.log(req.body)
 
   // let password = ''
   bcryptjs.hash(req.body.password,10,function(err,hash){
@@ -232,29 +253,16 @@ router.post('/register', (req, res, next) => {
       req.body.email,
       hash
     )
-    executeSQL(user.addUserSQL(), res, 'post', false, user)
+    registerGiveCoupon(user.addUserSQL(), res, 'post', false, user)
   })
 })
 
 
-// 顯示大頭貼
-// router.get("/avatarUpload", (req, res) => {
-//   res.render("try-upload");
-// });
 
 // 上傳大頭貼
 router.put("/avatarUpload", upload.single("avatar"), async (req, res) => {
   console.log(req.file);
   console.log(req.bearer);
-
-  // let newName = '';
-  // if(extMap[req.file.mimetype]){
-    //     newName = uuidv4() + extMap[req.file.mimetype];
-    //     await fs.promises.rename(req.file.path, './public/img/' + newName);
-    // }
-
-      // console.log(req.bearer.mId)
-  // console.log(req.body)
 
   let mId = req.bearer.mId
   let user = new User(
@@ -413,6 +421,103 @@ router.put('/addressbook', (req, res, next) => {
 router.delete('/address/:addressId', (req, res, next) => {
   executeSQL(User.deleteUserByIdSQL(req.params.addressId), res, 'delete', false)
 })
+
+// 遺失密碼，1.寄送忘記密碼信件
+router.post('/losepassword',async (req, res, next) => {
+
+  let email = req.body.email
+const nodemailer = require('nodemailer');
+
+
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'campfun789@gmail.com',
+        pass: 'ejulaemnttskemhz'
+    }
+});
+
+// 製作隨機驗證碼
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+const otg = getRandomInt(999999)
+console.log(otg)
+// 寫入會員資料庫
+let sql = `UPDATE member  \
+SET otg = '${otg}' WHERE email = '${email}'`
+
+const [rows] = await db.query(sql)
+console.log[rows]
+
+// setup email data with unicode symbols
+let mailOptions = {
+    from: 'campfun789@gmail.com', // sender address
+    to: email, // list of receivers
+    subject: '露營趣，找回您遺失的登入密碼。', // Subject line
+    // text: 'Hello world ?', // plain text body
+    html: `<h4>親愛的 ${email} 您好：</h4>
+    <p>我們已收到你的 露營趣 Campfun 密碼重設要求。
+    輸入以下驗證碼重設確認碼：</p><div style="border:2px solid #aaf;margin-left:200px;width:100px;text-align: center;" ><h2>${otg}</h2></div>，登入密碼畫面後請使用新密碼進行登入。為確保您使用安全，請於30分鐘內完成登入密碼設定變更。</p><p>你並沒有要求更改密碼？如果你並未要求新密碼，請通知我們。</p>`
+    
+};
+let output = {
+  success:false,
+  message: '',
+}
+// send mail with defined transport object
+transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      output.message = '寄信失敗'
+      res.status(200).json(output);
+    }
+    console.log('Message %s sent: %s', info.messageId, info.response);
+    output.success = true
+    output.message = '寄信成功'
+    res.status(200).json(output)
+}); 
+})
+
+// 遺失密碼，2.檢查驗證碼。
+router.post('/checkotg',async (req, res, next) => {
+
+  const email = req.body.email
+  const otg = req.body.otg
+// 寫入會員資料庫
+let sql = `SELECT * FROM member  \
+WHERE email = '${email}' AND otg = '${otg}'`
+
+const [rows] = await db.query(sql)
+console.log(rows)
+const result = rows[0]
+let output={success:false, message:'驗證碼錯誤'}
+if(!rows.length){
+    res.status(200).json(output)
+  } else{
+    output.success=true
+    output.message='驗證成功'
+    res.status(200).json(output)
+  }
+})
+
+// 遺失密碼，3.更改新密碼。
+router.post('/findLostPwd',async (req, res, next) => {
+  console.log(req.body)
+  const email = req.body.email
+  const newPwd = req.body.newPwd
+
+  bcryptjs.hash(newPwd,10,async function(err,hash){
+
+    // 寫入會員資料庫
+    let sql = `UPDATE member  \
+    SET password = '${hash}'
+    WHERE email = '${email}'`
+    const [rows] = await db.query(sql)
+    console.log[rows]
+    res.status(200).json(rows)
+  })
+})
+
 
 // 測試用
 router.get("/try-sess", (req, res) => {
