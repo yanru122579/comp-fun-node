@@ -55,7 +55,7 @@ const getListData = async (req) => {
     }
     //上面篩類別與總筆數頁數的設定  下面搜所有物品
     //也是搜尋總表 但因為我要搭配購買商品 所以我join商品
-    let sql = `SELECT cartOrder.cartOrderId,cartOrder.created_at,member.fName,cartOrder.nNN,cartOrder.startTime,cartOrder.endTime,cartOrder.countries,cartOrder.mid,cartOrder.townships,cartOrder.nAA,cartOrder.nCC,cartOrder.cartStatus,cartLogistics.cartLogisticsName,carPay.cartPayName,cartOrder.cartTotal,cartOrder.cartDescription,cartorder.orderclass FROM cartOrder INNER JOIN member ON cartOrder.mid = member.mId INNER JOIN carPay ON cartOrder.cartPayId = carPay.cartPayId INNER JOIN cartLogistics ON cartOrder.cartLogisticsId = cartLogistics.cartLogisticsId`;
+    let sql = `SELECT cartOrder.cartOrderId,cartOrder.created_at,member.fName,cartOrder.nNN,cartOrder.startTime,cartOrder.endTime,cartOrder.countries,cartOrder.mid,cartOrder.townships,cartOrder.nAA,cartOrder.nCC,cartOrder.cartStatus,cartLogistics.cartLogisticsName,cartorder.gameDay,cartorder.newMember,carPay.cartPayName,cartOrder.cartTotal,cartOrder.cartDescription,cartorder.orderclass FROM cartOrder INNER JOIN member ON cartOrder.mid = member.mId INNER JOIN carPay ON cartOrder.cartPayId = carPay.cartPayId INNER JOIN cartLogistics ON cartOrder.cartLogisticsId = cartLogistics.cartLogisticsId`;
     //定義排序 用時間 最新到最舊 與設定頁數
     const limit = ` ORDER BY cartOrder.created_at DESC LIMIT ${
       (page - 1) * perPage
@@ -216,6 +216,8 @@ router.post("/add", upload.none(), async (req, res) => {
       cartOrderId: req.body.orderInfo.cartOrderId,
       startTime: req.body.orderInfo.startTime,
       endTime: req.body.orderInfo.endTime,
+      gameDay: req.body.orderInfo.gameDay,
+      newMember: req.body.orderInfo.newMember,
     },
   ]);
   output = { ...output, body: req.body.orderInfo };
@@ -253,6 +255,8 @@ router.post("/addp", upload.none(), async (req, res) => {
       cartStatus: req.body.orderInfo.cartStatus,
       orderclass: req.body.orderInfo.orderclass,
       cartOrderId: req.body.orderInfo.cartOrderId,
+      gameDay: req.body.orderInfo.gameDay,
+      newMember: req.body.orderInfo.newMember,
     },
   ]);
   output = { ...output, body: req.body.orderInfo };
@@ -303,7 +307,7 @@ router.post("/addp", upload.none(), async (req, res) => {
 //線下訂單確認系統
 router.get("/ordercheck/:cartOrderId/:nCC", async (req, res) => {
   let sql =
-    "SELECT cartOrder.cartOrderId,cartOrder.created_at,member.fName,cartOrder.nNN,cartOrder.startTime,cartOrder.endTime,cartOrder.countries,cartitem.product_oimg,cartOrder.townships,cartOrder.nAA,cartOrder.nCC,cartOrder.cartStatus,cartLogistics.cartLogisticsName,carPay.cartPayName,cartOrder.cartTotal,cartOrder.cartDescription,cartitem.cartName,cartitem.cartName,cartitem.cartBuyQty,cartitem.cartBuyP FROM cartOrder INNER JOIN member ON cartOrder.mid = member.mId INNER JOIN carPay ON cartOrder.cartPayId = carPay.cartPayId INNER JOIN cartLogistics ON cartOrder.cartLogisticsId = cartLogistics.cartLogisticsId INNER JOIN cartitem ON cartorder.cartOrderId = cartitem.cartOrderId WHERE cartOrder.cartOrderId = ? AND nCC = ?";
+    "SELECT cartOrder.cartOrderId,cartOrder.created_at,member.fName,cartOrder.gameDay,cartOrder.newMember,cartOrder.nNN,cartOrder.startTime,cartOrder.endTime,cartOrder.countries,cartitem.product_oimg,cartOrder.townships,cartOrder.nAA,cartOrder.nCC,cartOrder.cartStatus,cartLogistics.cartLogisticsName,carPay.cartPayName,cartOrder.cartTotal,cartOrder.cartDescription,cartitem.cartName,cartitem.cartName,cartitem.cartBuyQty,cartitem.cartBuyP FROM cartOrder INNER JOIN member ON cartOrder.mid = member.mId INNER JOIN carPay ON cartOrder.cartPayId = carPay.cartPayId INNER JOIN cartLogistics ON cartOrder.cartLogisticsId = cartLogistics.cartLogisticsId INNER JOIN cartitem ON cartorder.cartOrderId = cartitem.cartOrderId WHERE cartOrder.cartOrderId = ? AND nCC = ?";
   let [r] = await db.query(sql, [req.params.cartOrderId, req.params.nCC]);
   //如果沒有找到資料就轉向到列表頁
   if (!r.length) {
@@ -321,7 +325,7 @@ router.post(
     const data = {
       ...req.body,
     };
-    console.log(data);
+
     let ouput = {
       success: false,
       type: "danger",
@@ -343,9 +347,34 @@ router.post(
 
 //用來測試member登入
 router.get("/member/:mId", async (req, res) => {
-  let sql = "SELECT * FROM `member` WHERE mId=?";
+  let sql =
+    "SELECT * FROM member INNER JOIN coupon ON member.mId =coupon.mId WHERE member.mId=?";
   let [r1] = await db.query(sql, [req.params.mId]);
+  // console.log(r1);
   res.json(r1[0]);
+});
+
+//使用庫放券
+router.post("/coupon/:mId", upload.none(), async (req, res) => {
+  const data = {
+    ...req.body,
+  };
+
+  let ouput = {
+    success: false,
+    type: "danger",
+    error: "",
+    results: {},
+  };
+  const sql = "UPDATE `coupon` SET ? WHERE mId=?";
+  console.log(sql);
+  const [results] = await db.query(sql, [
+    { newMember: req.body.newMember },
+    req.params.mId,
+  ]);
+
+  output = results;
+  res.json(output);
 });
 
 module.exports = router;
