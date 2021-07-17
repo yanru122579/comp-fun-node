@@ -46,7 +46,7 @@ router.get("/aid/:aid", async (req, res) => {
 });
 
 
-// 取得多組TAG商品(每組2個)/product/tags/1/2/3/4/5/6/
+// 取得多組TAG商品(每組無限個)/product/tags/1/2/3/4/5/6/
 router.get("/tags/*", async (req, res) => {
   const paramsArray = req.params[0].split('/');
   // console.log(paramsArray)
@@ -75,7 +75,7 @@ router.get("/catone/:catidone/:catidtwo?", async (req, res) => {
   res.json(p);
 });
 
-// 取得最新項目
+// 取得最新項目(八筆熱門)
 router.get("/latest", async (req, res) => {
   let p = await Product.getLatest();
   res.json(p);

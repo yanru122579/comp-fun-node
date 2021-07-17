@@ -27,7 +27,7 @@ class Product {
   //實際使用功能
   //關鍵字搜尋商品
   static async searchAll(key) {
-    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM `productlist` WHERE `product_name` LIKE '%"+key+"%' OR `product_summary` LIKE '%"+key+"%' OR `product_desc` LIKE '%"+key+"%'";
+    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM `productlist` WHERE `product_name` LIKE '%"+key+"%' OR `product_summary` LIKE '%"+key+"%' OR `product_desc` LIKE '%"+key+"%' AND `productlist`.`qty` > 0";
     console.log(sql)
     let [r] = await db.query(sql);
     return r;
@@ -43,7 +43,7 @@ class Product {
 
   //抓取10筆來自AID關聯商品
   static async getByAid(aid){
-    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM (`productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id`) INNER JOIN `atagmap` ON `atagmap`.`tagId`=`ptagmap`.`tagId` WHERE `atagmap`.`aId` = ? GROUP BY `ptagmap`.`pId` LIMIT 10" ;
+    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM (`productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id`) INNER JOIN `atagmap` ON `atagmap`.`tagId`=`ptagmap`.`tagId` WHERE `atagmap`.`aId` = ? AND `productlist`.`qty` > 0 GROUP BY `ptagmap`.`pId` LIMIT 10" ;
     let[r] = await db.query(sql, [aid]);
     return r;
   }
@@ -61,7 +61,7 @@ class Product {
 
   //抓取所有該tag下的商品
   static async getByTag(ptag) {
-    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM `productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id` WHERE `ptagmap`.`tagId` = ?" ;
+    let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_ocimg` as `product_img2`,`productlist`.`product_rate`,`productlist`.`product_price` FROM `productlist` INNER JOIN `ptagmap` ON `ptagmap`.`pId` = `productlist`.`product_id` WHERE `ptagmap`.`tagId` = ? AND `productlist`.`qty` > 0" ;
     let [r] = await db.query(sql, [ptag]);
     return r;
   }
@@ -78,9 +78,9 @@ class Product {
         return data
   }
 
-  //抓取類別所有商品
+  //抓取單類別所有商品
       static async getByCat(catid) {
-        let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` WHERE `productlist`.`cat_id` = ? ORDER BY `productlist`.`updated_at`" ;
+        let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` WHERE `productlist`.`cat_id` = ? AND `productlist`.`qty` > 0 ORDER BY `productlist`.`updated_at`" ;
         let [r] = await db.query(sql,catid);
         console.log(r);
         return r;
@@ -88,7 +88,7 @@ class Product {
 
    //抓取類別所有商品(卡片用)
       static async getByCatCard(catidone,catidtwo) {
-        let sql = "SELECT `productlist`.`cat_id`,`productlist`.`product_id`,`productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` WHERE `productlist`.`cat_id` = ? ORDER BY `productlist`.`updated_at`" ;
+        let sql = "SELECT `productlist`.`cat_id`,`productlist`.`product_id`,`productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` WHERE `productlist`.`cat_id` = ? AND `productlist`.`qty` > 0 ORDER BY `productlist`.`updated_at`" ;
 
           let [r] = await db.query(sql,catidone)
           // console.log(r)
@@ -104,7 +104,7 @@ class Product {
 
     //抓取最新購買的商品(熱門8筆)
     static async getLatest() {
-      let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` ORDER BY `productlist`.`updated_at` DESC LIMIT 8 " ;
+      let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price`FROM `productlist` WHERE `productlist`.`qty` > 0 ORDER BY `productlist`.`updated_at` DESC LIMIT 8 " ;
       let [r] = await db.query(sql);
       console.log(r);
       return r;

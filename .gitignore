@@ -1,30 +1,9 @@
-<<<<<<< HEAD
 /.vscode/
 .gitignore
-.env
 .idea
 .gitignore
 node_modules
 package-lock.json
-=======
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-/src/img
-/public
-/public/img
-
-# testing
-/coverage
-
-# production
-/build
-
-# misc
->>>>>>> 06fac9b015ef61e21a3d1201de1f918b4a63241e
 .DS_Store
 .env.local
 .env.development.local
