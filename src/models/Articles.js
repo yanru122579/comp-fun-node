@@ -28,27 +28,11 @@ class Articles {
       let perPage = params.perPage || 3; //每頁有幾筆
       let page = params.page || 1; // 查看第幾頁
       let cate = parseInt(params.cate) || 0; // 分類編號
-      // let keyword = params.keyword || ''; // 搜尋產品名稱或作者姓名
-      // let orderBy = params.orderBy || ''; // 排序
 
       let where = ' WHERE 1 ';
       if(cate) {
           where += ' AND aCategoryId='+ cate;
       } // 類別
-        // if(keyword){
-        //     let k2 = db.escape('%'+ keyword+ '%');
-        //     where += ` AND (author LIKE ${k2} OR aTitle LIKE ${k2})`
-        // } // 搜尋
-
-        // let orderStr = ''; // 排序
-        // switch(orderBy){
-        //     case 'date-asc':
-        //         orderStr = ' ORDER BY `aDate` ASC';
-        //         break;
-        //     case 'date-desc':
-        //         orderStr = ' ORDER BY `aDate` DESC';
-        //         break;
-        // }
 
       let t_sql = `SELECT COUNT(1) num FROM \`articlelist\` ${where}`;
       let [r1] = await db.query(t_sql);
