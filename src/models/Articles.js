@@ -155,18 +155,7 @@ class Articles {
         }
     }
 
-    // 讀取留言板
-    static async getComment(cId){
-      if(!cId) return null;
-      let sql =  "SELECT * FROM `acommentlist` ORDER BY `created_at` ASC"
-      let [r] = await db.query(sql, [cId]);
-      if(!r || !r.length){
-        return null;
-      }
-      return r; 
-    }
-      
-    // 新增留言板
+        // 新增留言板
     constructor(data){
       let defaultData = {
         cId: null,
@@ -174,9 +163,7 @@ class Articles {
         content: '',
         avatar: '[]',
         mId: 0,
-        aId: 0,
-        // created_at:'',
-        // updated_at:'',
+        aId: 0,    
       };
       this.data = {...defaultData, ...data};
     }
@@ -190,6 +177,17 @@ class Articles {
       return result.insertId;
     }
     
+    // 讀取留言板
+    static async getComment(cId){
+      if(!cId) return null;
+      let sql =  "SELECT * FROM `acommentlist` WHERE `aId` = ? ORDER BY `created_at` ASC"
+      let [r] = await db.query(sql, [cId]);
+      if(!r || !r.length){
+        return null;
+      }
+      return r; 
+    }
+      
 }
 
 module.exports = Articles;

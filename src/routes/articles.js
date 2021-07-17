@@ -81,7 +81,7 @@ router.post('/comment/add', upload.none(), async(req, res)=>{
 });
 
 // 取得留言板
-router.get('/comment', async(req, res)=>{
+router.get('/comment/:aId', async(req, res)=>{
   let p = await Articles.getComment(req)
   res.json(p)
 })
