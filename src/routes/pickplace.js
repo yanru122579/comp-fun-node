@@ -24,6 +24,7 @@ router.post("/catchdata", async (req, res) => {
 
 // 取得單筆場地
 router.post("/catchone", async (req, res) => {
+  // console.log(req.body.i);
   res.json(await Pickplace.getItem(req.body.i));
 });
 

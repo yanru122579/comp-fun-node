@@ -12,11 +12,28 @@ class Pickplace {
     placeDesc: '',
     placeRating: 0,
     placeViewImg: '',
+    areaId: null,
+    placeSImg: '',
+    placeAImg: '',
+    placeArea: '',
+    placeType: '',
+    placeSize: '',
+    tentQty: 0,
+    weekdaysPrice: 0,
+    holidayPrice: 0,
+    continuousPrice: 0,
+    altitude: '',
+    feature:'',
+    bathroom:'',
+    wlComm:'',
+    pet:'',
+    equipment:'',
+    service:'',
+    parking:'',
   };
 
   this.data = { ...defaultData, ...data };
 }
-
 
 
 static async getRows(params = {}) {
@@ -53,7 +70,12 @@ static async getRows(params = {}) {
       break;
   }
 
+  // `SELECT COUNT(1) num FROM \`placeinfo\` ${where}`; 獲得總筆數
+
   let t_sql = `SELECT COUNT(1) num FROM \`placeinfo\` ${where}`; //獲得總筆數
+
+  // SELECT COUNT(1) num FROM `placeinfo` INNER JOIN `placeprice` ON `placeinfo`.`placeId` = `placeprice`.`placeId` INNER JOIN `placeinfodesc` ON `placeinfodesc`.`placeDescId` = `placeinfo`.`placeId` WHERE 1
+
   let [r1] = await db.query(t_sql);
   let total = r1[0]["num"];
 
@@ -77,11 +99,31 @@ static async getRows(params = {}) {
 }
 
 
+
+ static async getRow(placeId) {
+  if (!placeId) return null;
+
+  let sql =" SELECT * FROM `placeinfo` INNER JOIN `placeprice` ON `placeinfo`.`placeId` = `placeprice`.`placeId` INNER JOIN `placeinfodesc` ON `placeinfodesc`.`placeDescId` = `placeinfo`.`placeId` WHERE `placeinfo`.`placeId` = ?"
+
+  let [r] = await db.query(sql, [placeId]);
+
+
+  // let t_sql = "SELECT COUNT(1) num FROM `placeinfo` INNER JOIN `placeprice` ON `placeinfo`.`placeId` = `placeprice`.`placeId` WHERE `placeinfo`.`placeId` = ?" 
+  // let [r1] = await db.query(t_sql);
+  // let areatotal = r1[0]["num"];
+
+
+  // if (!r || r.length) {
+  //   return null;
+  // }
+  // console.log(r[0]);
+  return {data: r};
+}
+
 //讀取單筆
-static async getItem(sid) {
-  let row = await Pickplace.getRow(sid);
-  // console.log(row);
-  return new Pickplace(row);
+static async getItem(placeId) {
+  let row = await Pickplace.getRow(placeId);
+  return row;
 }
 
 
