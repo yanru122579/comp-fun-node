@@ -82,7 +82,9 @@ router.post('/comment/add', upload.none(), async(req, res)=>{
 
 // 取得留言板
 router.get('/comment/:aId', async(req, res)=>{
-  let p = await Articles.getComment(req)
+  console.log(req.params)
+  let aId = req.params.aId
+  let p = await Articles.getComment(aId)
   res.json(p)
 })
 

@@ -178,10 +178,10 @@ class Articles {
     }
     
     // 讀取留言板
-    static async getComment(cId){
-      if(!cId) return null;
+    static async getComment(aId){
+      if(!aId) return null;
       let sql =  "SELECT * FROM `acommentlist` WHERE `aId` = ? ORDER BY `created_at` ASC"
-      let [r] = await db.query(sql, [cId]);
+      let [r] = await db.query(sql, [aId]);
       if(!r || !r.length){
         return null;
       }
