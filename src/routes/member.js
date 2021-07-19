@@ -301,11 +301,11 @@ router.put('/userdata/', (req, res) => {
     id = 0,
     email = req.bearer.email,
     password = '',
-    fName = req.body.fName,
-    lName = req.body.lName,
-    nickname = req.body.nickname,
+    fName = undefined || req.body.fName,
+    lName = undefined || req.body.lName,
+    nickname = undefined || req.body.nickname,
     birthday = req.body.birthday,
-    phone = req.body.phone,
+    phone = undefined || req.body.phone,
     gender = req.body.gender,
     avatar = req.bearer.avatar
   )
@@ -518,7 +518,7 @@ router.post('/findLostPwd',async (req, res, next) => {
   })
 })
 
-// 線上客服 :　發送訊息
+// 線上客服 用戶端:　發送訊息
 router.post('/sendMessage',async (req, res, next) => {
   console.log(req.body)
   console.log(req.bearer)
@@ -541,12 +541,79 @@ router.post('/sendMessage',async (req, res, next) => {
   }
 })
 
-// 線上客服 :　讀取全部對話
+// 線上客服 用戶端:　讀取全部對話
 router.get('/getAllMessage',async (req, res, next) => {
   console.log(req.bearer)
   const mId = req.bearer.mId
 
   let sql = `SELECT * FROM csmessage WHERE fromWho = '${mId}' OR toWho ='${mId}'`
+
+  const [rows] = await db.query(sql)
+  console.log(rows)
+  res.status(200).json(rows)
+})
+
+
+
+// 線上客服 客服端:　發送訊息
+router.post('/staffSendMessage',async (req, res, next) => {
+  console.log(req.body)
+  const id = 'csStaff'
+  const id2 = req.body.mId
+  const message = req.body.message
+
+  let output={success:false, message:'發送訊息失敗'}
+
+  let sql = `INSERT INTO csmessage(fromWho, toWho, messsage) VALUES ('${id}','${id2}','${message}')`
+
+  const [rows] = await db.query(sql)
+  console.log(rows)
+
+  if(rows.length < 1){
+    res.status(200).json(output)
+  } else{
+    output.success=true
+    output.message='成功發送對話'
+    res.status(200).json(output)
+  }
+})
+
+// 線上客服 客服端:　讀取全部對話
+router.get('/getThisMemberMessage/:mId',async (req, res, next) => {
+  console.log(req.params.mId)
+  const mId = req.params.mId
+
+  let sql = `SELECT * FROM csmessage WHERE fromWho = '${mId}' OR toWho ='${mId}'`
+
+  const [rows] = await db.query(sql)
+  console.log(rows)
+  res.status(200).json(rows)
+})
+
+// 線上客服 客服端:　側邊會員清單
+router.get('/staffGetList',async (req, res, next) => {
+
+  let sql = `SELECT DISTINCT fromWho,MAX (created_at)
+  FROM csmessage
+  GROUP BY fromWho
+  ORDER BY created_at DESC, fromWho `
+
+  const [rows] = await db.query(sql)
+  console.log(rows)
+  res.status(200).json(rows)
+})
+
+// 線上客服 客服端: 讀取會員個人資料
+router.get('/staffGetMemberdata/:mId', (req, res, next) => {
+  let mId = req.params.mId
+  executeSQL(User.getUserByIdSQL(mId), res, 'get', false)
+})
+// 線上客服 客服端: 讀取會員個人資料
+router.get('/getAmountOfConsumption', async (req, res, next) => {
+  console.log(req.bearer.mId)
+  let mId = req.bearer.mId
+
+  let sql = `SELECT mId ,SUM(cartTotal) AS money FROM cartorder WHERE mId= '${mId}' GROUP BY mId `
 
   const [rows] = await db.query(sql)
   console.log(rows)

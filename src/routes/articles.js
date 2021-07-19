@@ -74,6 +74,8 @@ router.post('/comment/add', upload.none(), async(req, res)=>{
   const c = new Articles({    
     name: req.body.name,
     content: req.body.comment,
+    mId: req.body.mId,
+    aId: req.body.aId,
   });
   
   const newCid = await c.add();
