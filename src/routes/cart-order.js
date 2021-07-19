@@ -255,6 +255,8 @@ router.post("/addp", upload.none(), async (req, res) => {
       cartStatus: req.body.orderInfo.cartStatus,
       orderclass: req.body.orderInfo.orderclass,
       cartOrderId: req.body.orderInfo.cartOrderId,
+      startTime: req.body.orderInfo.startTime,
+      endTime: req.body.orderInfo.endTime,
       gameDay: req.body.orderInfo.gameDay,
       newMember: req.body.orderInfo.newMember,
     },
