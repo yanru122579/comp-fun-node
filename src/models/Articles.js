@@ -65,7 +65,7 @@ class Articles {
     // 讀取類別 
     static async getCate(aCategoryId){
       if(!aCategoryId) return null;
-      let sql = "SELECT * FROM `articlelist` JOIN `acategorylist` ON `articlelist`.`aCategoryId` = `acategorylist`.`aCatId` WHERE `aCategoryId` =?"
+      let sql = "SELECT * FROM `articlelist` JOIN `acategorylist` ON `articlelist`.`aCategoryId` = `acategorylist`.`aCatId` WHERE `aCategoryId` =? ORDER BY `articlelist`.`aDate` DESC;"
       // 回傳取得類別資料的陣列
       let [r] = await db.query(sql, [aCategoryId]);
       if(!r || !r.length){
@@ -126,7 +126,7 @@ class Articles {
     // 讀取分類名稱 on breadcrumb
       static async getCateName(aCategoryId){
         if(!aCategoryId) return null;
-        let sql =  "SELECT * FROM `articlelist` JOIN `acategorylist` ON `articlelist`.`aCategoryId` = `acategorylist`.`aCatId` WHERE `aCategoryId` =?"
+        let sql =  "SELECT * FROM `articlelist` JOIN `acategorylist` ON `articlelist`.`aCategoryId` = `acategorylist`.`aCatId` WHERE `aCategoryId` =? "
         let [r] = await db.query(sql, [aCategoryId]);
         if(!r || !r.length){
           return null;
