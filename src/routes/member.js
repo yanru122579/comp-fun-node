@@ -608,6 +608,17 @@ router.get('/staffGetMemberdata/:mId', (req, res, next) => {
   let mId = req.params.mId
   executeSQL(User.getUserByIdSQL(mId), res, 'get', false)
 })
+// 線上客服 客服端: 讀取會員個人資料
+router.get('/getAmountOfConsumption', async (req, res, next) => {
+  console.log(req.bearer.mId)
+  let mId = req.bearer.mId
+
+  let sql = `SELECT mId ,SUM(cartTotal) AS money FROM cartorder WHERE mId= '${mId}' GROUP BY mId `
+
+  const [rows] = await db.query(sql)
+  console.log(rows)
+  res.status(200).json(rows)
+})
 
 
 // 測試用
