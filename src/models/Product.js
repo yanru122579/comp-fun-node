@@ -49,15 +49,18 @@ class Product {
   }
 
 
-
-
-
   //抓取單項商品所有資料
   static async getItemById(pid) {
     let sql = "SELECT * FROM `productlist` WHERE `product_id`= ?" ;
     let [r] = await db.query(sql, [pid]);
     return r;
   }
+    //抓取單項商品"卡片"資料
+    static async getItemCardById(pid) {
+      let sql = "SELECT `productlist`.`product_name`,`productlist`.`product_id`,`productlist`.`product_summary`,`productlist`.`product_ocimg` as `product_img`,`productlist`.`product_rate`,`productlist`.`product_price` FROM `productlist` WHERE `product_id`= ?";
+      let [r] = await db.query(sql, [pid]);
+      return r;
+    }
 
   //抓取所有該tag下的商品
   static async getByTag(ptag) {
@@ -65,6 +68,16 @@ class Product {
     let [r] = await db.query(sql, [ptag]);
     return r;
   }
+
+  //抓取TAG中文名稱
+  static async getTagName(tagId) {
+    let sql = "SELECT `ataglist`.`tagName`,`ataglist`.`tagId` FROM `ataglist` WHERE `tagId` = ?";
+    let [r] = await db.query(sql, [tagId]);
+    return r;
+  }
+
+
+
     //抓取多個tag下的商品
   static async getByTags(ptag) {
         console.log("ptag",ptag)
