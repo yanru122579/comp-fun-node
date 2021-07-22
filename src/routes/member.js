@@ -523,11 +523,12 @@ router.post('/sendMessage',async (req, res, next) => {
   console.log(req.body)
   console.log(req.bearer)
   const mId = req.bearer.mId
+  const email = req.bearer.email
   const message = req.body.message
 
   let output={success:false, message:'發送訊息失敗'}
 
-  let sql = `INSERT INTO csmessage(fromWho, toWho, messsage) VALUES ('${mId}','csStaff','${message}')`
+  let sql = `INSERT INTO csmessage(fromWho, toWho, messsage) VALUES ('${email}','csStaff','${message}')`
 
   const [rows] = await db.query(sql)
   console.log(rows)
@@ -543,10 +544,11 @@ router.post('/sendMessage',async (req, res, next) => {
 
 // 線上客服 用戶端:　讀取全部對話
 router.get('/getAllMessage',async (req, res, next) => {
-  console.log(req.bearer)
+  // console.log(req.bearer)
   const mId = req.bearer.mId
+  const email = req.bearer.email
 
-  let sql = `SELECT * FROM csmessage WHERE fromWho = '${mId}' OR toWho ='${mId}'`
+  let sql = `SELECT * FROM csmessage WHERE fromWho = '${email}' OR toWho ='${email}'`
 
   const [rows] = await db.query(sql)
   console.log(rows)
@@ -579,11 +581,11 @@ router.post('/staffSendMessage',async (req, res, next) => {
 })
 
 // 線上客服 客服端:　讀取全部對話
-router.get('/getThisMemberMessage/:mId',async (req, res, next) => {
-  console.log(req.params.mId)
-  const mId = req.params.mId
+router.get('/getThisMemberMessage/:email',async (req, res, next) => {
+  // console.log(req.params.email)
+  const email = req.params.email
 
-  let sql = `SELECT * FROM csmessage WHERE fromWho = '${mId}' OR toWho ='${mId}'`
+  let sql = `SELECT * FROM csmessage WHERE fromWho = '${email}' OR toWho ='${email}'`
 
   const [rows] = await db.query(sql)
   console.log(rows)
@@ -604,9 +606,15 @@ router.get('/staffGetList',async (req, res, next) => {
 })
 
 // 線上客服 客服端: 讀取會員個人資料
-router.get('/staffGetMemberdata/:mId', (req, res, next) => {
-  let mId = req.params.mId
-  executeSQL(User.getUserByIdSQL(mId), res, 'get', false)
+router.get('/staffGetMemberdata/:email', async(req, res, next) => {
+  let email= req.params.email
+  let sql = `SELECT * FROM Member WHERE email = '${email}'`
+  const [rows] = await db.query(sql)
+  console.log('123',rows)
+  let result = {}
+  if (rows.length) result = rows[0]
+  res.status(200).json(result)
+
 })
 // 線上客服 客服端: 讀取會員個人資料
 router.get('/getAmountOfConsumption', async (req, res, next) => {
