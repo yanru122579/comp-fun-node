@@ -18,6 +18,7 @@ router.get("/all", async (req, res) => {
 
 // 取得篩選地區後場地
 router.post("/catchdata", async (req, res) => {
+  console.log('place',req.body.cLocation)
   res.json(await Pickplace.getRows({keyword:`${req.body.cLocation}`}));
 });
 
