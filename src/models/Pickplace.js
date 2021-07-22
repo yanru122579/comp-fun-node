@@ -37,7 +37,7 @@ class Pickplace {
 
 
 static async getRows(params = {}) {
-  let perPage = params.perPage || 8; // 每頁有幾筆
+  let perPage = params.perPage || 31; // 每頁有幾筆
   let page = params.page || 1; // 查看第幾頁
   let cate = parseInt(params.cate) || 0; // 分類編號
   let keyword = params.keyword || ""; // 搜尋篩選

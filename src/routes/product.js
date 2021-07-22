@@ -16,6 +16,11 @@ router.get("/search", async (req, res) => {
   res.json(p);
 });
 
+/*找tag中文名稱 */
+router.get("/tagName/:tagId", async (req, res) => {
+  let p = await Product.getTagName(req.params.tagId);
+  res.json(p[0]);
+});
 
 /*
 單項商品
@@ -24,6 +29,12 @@ router.get("/search", async (req, res) => {
 //取得單筆商品完整資料
 router.get("/item/:pid", async (req, res) => {
   let p = await Product.getItemById(req.params.pid);
+  res.json(p[0]);
+});
+
+//取得單筆商品卡片資料
+router.get("/itemcard/:pid", async (req, res) => {
+  let p = await Product.getItemCardById(req.params.pid);
   res.json(p[0]);
 });
 
@@ -63,7 +74,7 @@ router.get("/tags/*", async (req, res) => {
 //   res.json(p);
 // });
 
-// 取得類別所有項目
+// 取得類別所有項目(單個類別)
 router.get("/cat/:catid", async (req, res) => {
   let p = await Product.getByCat(req.params.catid);
   res.json(p);

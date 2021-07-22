@@ -155,7 +155,7 @@ class Articles {
         }
     }
 
-        // 新增留言板
+    // 新增會員留言
     constructor(data){
       let defaultData = {
         cId: null,
@@ -163,7 +163,8 @@ class Articles {
         content: '',
         avatar: '[]',
         mId: 0,
-        aId: 0,    
+        aId: 0, 
+        reply:'',   
       };
       this.data = {...defaultData, ...data};
     }
@@ -177,7 +178,7 @@ class Articles {
       return result.insertId;
     }
     
-    // 讀取留言板
+    // 讀取會員留言
     static async getComment(aId){
       if(!aId) return null;
       let sql =  
@@ -188,7 +189,7 @@ class Articles {
       }
       return r; 
     }
-      
+    
 }
 
 module.exports = Articles;
