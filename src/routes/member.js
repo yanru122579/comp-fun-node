@@ -561,7 +561,7 @@ router.get('/getAllMessage',async (req, res, next) => {
 router.post('/staffSendMessage',async (req, res, next) => {
   console.log(req.body)
   const id = 'csStaff'
-  const id2 = req.body.mId
+  const id2 = req.body.email
   const message = req.body.message
 
   let output={success:false, message:'發送訊息失敗'}
@@ -627,6 +627,21 @@ router.get('/getAmountOfConsumption', async (req, res, next) => {
   console.log(rows)
   res.status(200).json(rows)
 })
+
+// 測試按鈕
+router.get('/testAddMoney', async (req, res, next) => {
+  console.log(req.bearer)
+  let mId = req.bearer.mId
+  let email = req.bearer.email
+  let time =new Date().getTime();
+
+  let sql = `INSERT INTO cartorder(cartOrderId,mid, cartStatus, cartDescription, cartLogisticsId,cartPayId, cartTotal, nNN, townships, nAA,nCC, nEE, orderclass) VALUES (${time},'${mId}','已完成','1','1','1','4000','張大頭','0','基隆市仁愛區大安路一段','0912345678','${email}','1')`
+
+  const [rows] = await db.query(sql)
+  console.log(rows)
+  res.status(200).json(rows)
+});
+
 
 
 // 測試用
