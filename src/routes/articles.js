@@ -4,7 +4,7 @@ const express = require("express");
 const Articles = require(__dirname + "/../models/Articles");
 const router = express.Router();
 const upload = require(__dirname + "/../modules/upload-img")
-
+const db = require(__dirname + "/../modules/mysql2-connect");
 //路由請由此開始設定
 
 // 取得最新
@@ -68,7 +68,7 @@ router.get('/allpost', async(req, res)=>{
   res.json(await Articles.getRows());
 });
 
-// 新增留言板
+// 新增會員留言
 router.post('/comment/add', upload.none(), async(req, res)=>{ 
   console.log('body',req.body)
   const c = new Articles({    
@@ -82,12 +82,36 @@ router.post('/comment/add', upload.none(), async(req, res)=>{
   res.json([req.baseUrl, req.url, newCid]);
 });
 
-// 取得留言板
+// 取得會員留言
 router.get('/comment/:aId', async(req, res)=>{
   console.log(req.params)
   let aId = req.params.aId
   let p = await Articles.getComment(aId)
   res.json(p)
 })
+
+// 新增商家回覆
+router.post("/comment/:cId", upload.none(), async (req, res) => {
+  const data = {
+    ...req.body,
+  };
+
+  let ouput = {
+    success: false,
+    type: "danger",
+    error: "",
+    results: {},
+  };
+  const sql = "UPDATE acommentlist SET ? WHERE cId=?";
+  console.log(req.body);
+  const [results] = await db.query(sql, [
+    { reply: req.body.reply
+    },
+    req.params.cId,
+  ]);
+
+  output = results;
+  res.json(output);
+});
 
 module.exports = router;
