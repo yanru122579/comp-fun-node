@@ -264,52 +264,11 @@ router.post("/addp", upload.none(), async (req, res) => {
   output = { ...output, body: req.body.orderInfo };
   res.json(output);
 });
-//結帳時將使用者資訊與營地租借寫入資料庫
-// router.post("/addp", upload.none(), async (req, res) => {
-//   let output = {
-//     success: false,
-//     error: "",
-//     insertId: 0,
-//   };
-//   const data = {
-//     ...req.body,
-//     cartOrderId: moment().format("YYMMDDhhmmss"),
-//   };
-//   console.log(data);
-//   const sql = "INSERT INTO `cartplace` SET ?";
-//   const [results] = await db.query(sql, [
-//     {
-//       cartOrderId: data.cartOrderId,
-//       cpAreaId: data.cpAreaId,
-//       cpArea: data.cpArea,
-//       cpQty: data.cpQty,
-//     },
-//   ]);
-//   const sql1 = "INSERT INTO `cartorder` SET?";
-//   const [results1] = await db.query(sql1, [
-//     {
-//       nNN: data.nNN,
-//       nAA: data.nAA,
-//       nCC: data.nCC,
-//       nEE: data.nEE,
-//       cartPayId: data.cartPayId,
-//       cartLogisticsId: data.cartLogisticsId,
-//       mid: data.mid,
-//       cartTotal: data.cartTotal,
-//       cartDescription: data.cartDescription,
-//       cartStatus: data.cartStatus,
-//       cartOrderId: data.cartOrderId,
-//       orderclass: +3,
-//     },
-//   ]);
-//   output = { ...output, body: req.body };
-//   res.json(output);
-// });
 
 //線下訂單確認系統
 router.get("/ordercheck/:cartOrderId/:nCC", async (req, res) => {
   let sql =
-    "SELECT cartOrder.cartOrderId,cartOrder.created_at,member.fName,cartOrder.gameDay,cartOrder.newMember,cartOrder.nNN,cartOrder.startTime,cartOrder.endTime,cartOrder.countries,cartitem.product_oimg,cartOrder.townships,cartOrder.nAA,cartOrder.nCC,cartOrder.cartStatus,cartLogistics.cartLogisticsName,carPay.cartPayName,cartOrder.cartTotal,cartOrder.cartDescription,cartitem.cartName,cartitem.cartName,cartitem.cartBuyQty,cartitem.cartBuyP FROM cartOrder INNER JOIN member ON cartOrder.mid = member.mId INNER JOIN carPay ON cartOrder.cartPayId = carPay.cartPayId INNER JOIN cartLogistics ON cartOrder.cartLogisticsId = cartLogistics.cartLogisticsId INNER JOIN cartitem ON cartorder.cartOrderId = cartitem.cartOrderId WHERE cartOrder.cartOrderId = ? AND nCC = ?";
+    "SELECT cartOrder.cartOrderId,cartItem.product_id,cartOrder.created_at,member.fName,cartOrder.gameDay,cartOrder.newMember,cartOrder.nNN,cartOrder.startTime,cartOrder.endTime,cartOrder.countries,cartitem.product_oimg,cartOrder.townships,cartOrder.nAA,cartOrder.nCC,cartOrder.cartStatus,cartLogistics.cartLogisticsName,carPay.cartPayName,cartOrder.cartTotal,cartOrder.cartDescription,cartitem.cartName,cartitem.cartName,cartitem.cartBuyQty,cartitem.cartBuyP FROM cartOrder INNER JOIN member ON cartOrder.mid = member.mId INNER JOIN carPay ON cartOrder.cartPayId = carPay.cartPayId INNER JOIN cartLogistics ON cartOrder.cartLogisticsId = cartLogistics.cartLogisticsId INNER JOIN cartitem ON cartorder.cartOrderId = cartitem.cartOrderId WHERE cartOrder.cartOrderId = ? AND nCC = ?";
   let [r] = await db.query(sql, [req.params.cartOrderId, req.params.nCC]);
   //如果沒有找到資料就轉向到列表頁
   if (!r.length) {
@@ -334,18 +293,99 @@ router.post(
       error: "",
       results: {},
     };
-    const sql = "UPDATE `cartOrder` SET ? WHERE cartOrderId =? AND nCC = ?";
-    console.log(sql);
-    const [results] = await db.query(sql, [
-      { cartStatus: data.cartStatus },
+    //單筆版
+    const sql1 = "UPDATE `cartOrder` SET ? WHERE cartOrderId =? AND nCC = ?";
+    const [results] = await db.query(sql1, [
+      { cartStatus: data.cartStatus, cartTotal: data.cartTotal },
       req.params.cartOrderId,
       req.params.nCC,
     ]);
-    console.log(results);
+
     output = results;
     res.json(output);
   }
 );
+//線下確認訂單已完成或取消
+router.post(
+  "/ordercheck1/:cartOrderId/:product_id",
+  upload.none(),
+  async (req, res) => {
+    const data = {
+      ...req.body,
+    };
+
+    let output = {
+      success: false,
+      type: "danger",
+      error: "",
+      results: {},
+    };
+
+    //迴圈版
+    // for (let item of req.body.orderItem) {
+    // item.cartOrderId = cartOrderId;
+    // const sql =
+    //   "UPDATE `cartItem` SET ? WHERE cartOrderId =? AND product_id=?";
+    // console.log("1", sql);
+
+    // const [results] = await db.query(sql, [
+    //   item,
+    //   req.params.cartOrderId,
+    //   req.params.product_id,
+    //   // req.params.nCC,
+    // ]);
+    const sql1 =
+      "UPDATE `cartItem` SET ? WHERE cartOrderId =? AND product_id = ? ";
+    const [results] = await db.query(sql1, [
+      { cartBuyQty: data.cartBuyQty },
+      req.params.cartOrderId,
+      req.params.product_id,
+    ]);
+    output = results;
+    res.json(output);
+  }
+);
+// //線下確認訂單已完成或取消 保留
+// router.post(
+//   "/ordercheck/:cartOrderId/:nCC",
+//   upload.none(),
+//   async (req, res) => {
+//     const data = {
+//       ...req.body,
+//     };
+
+//     let ouput = {
+//       success: false,
+//       type: "danger",
+//       error: "",
+//       results: {},
+//     };
+//     //單筆版
+//     const sql1 = "UPDATE `cartOrder` SET ? WHERE cartOrderId =? AND nCC = ?";
+//     console.log(sql);
+//     const [results] = await db.query(sql1, [
+//       { cartStatus: data.orderInfo.cartStatus },
+//       req.params.cartOrderId,
+//       req.params.nCC,
+//     ]);
+
+//     //迴圈版
+//     for (let item of req.body.data) {
+//       // item.cartOrderId = cartOrderId;
+//       const sql = "UPDATE `cartItem` SET ? WHERE cartOrderId =? ";
+//       const [results] = await db.query(sql, [
+//         item,
+//         req.params.cartOrderId,
+//         req.params.nCC,
+//       ]);
+//       console.log(req.body);
+//     }
+//     console.log(results);
+//     output = results;
+//     res.json(output);
+//   }
+
+// );
 
 //用來測試member登入
 router.get("/member/:mId", async (req, res) => {
