@@ -3,7 +3,8 @@ const express = require("express");
 const moment = require("moment-timezone");
 const db = require(__dirname + "/../modules/mysql2-connect");
 const upload = require(__dirname + "/../modules/upload-img");
-
+//發送認證信
+const nodemailer = require("nodemailer");
 const router = express.Router();
 
 //訂單列表
@@ -418,5 +419,31 @@ router.post("/coupon/:mId", upload.none(), async (req, res) => {
   output = results;
   res.json(output);
 });
+
+//測試發送信件
+// router.post("/mail", async (req, res, next) => {
+//   let email = req.body.email;
+//   // let nNN = req.body.nNN;
+
+//   let transporter = nodemailer.createTransport({
+//     // host: "smtp.ethereal.email",
+//     port: 4000,
+//     secure: "gmail",
+//     auth: {
+//       user: "campfun789@gmail.com",
+//       pass: "ejulaemnttskemhz",
+//     },
+//   });
+//   // send mail with defined transport object
+//   let info = transporter.sendMail({
+//     from: "campfun789@gmail.com", // sender address
+//     to: email, // list of receivers
+//     subject: "露營趣，購物通知", // Subject line
+//     // text: "Hello world?", // plain text body
+//     html: `<h4>親愛的 123 您好：</h4>
+//     <p>感謝您的購買</p>`, // html body
+//   });
+//   res.json(info);
+// });
 
 module.exports = router;
